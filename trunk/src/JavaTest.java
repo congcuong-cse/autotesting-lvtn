@@ -7,6 +7,16 @@
  * Visit http://www.pragmaticprogrammer.com/titles/tpantlr2 for more book information.
 ***/
 import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.misc.Utils;
+import org.antlr.v4.runtime.tree.Trees;
+
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class JavaTest {
 	public static void main(String[] args) throws Exception {
@@ -16,9 +26,15 @@ public class JavaTest {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		JavaParser parser = new JavaParser(tokens);
 		parser.setBuildParseTree(true);
+		//RuleContext tree = parser.compilationUnit();		
 		RuleContext tree = parser.methodDeclaration();
-		tree.inspect(parser); // show in gui
+		//StringBuilder buf = new StringBuilder();
+        //buf.append("(");
+        String s = Utils.escapeWhitespace(Trees.getNodeText(tree.getChild(2).getChild(1).getChild(0), parser), false);
+        //buf.append(s);
+        System.out.println(s);
+		//tree.inspect(parser); // show in gui
 		//tree.save(parser, "out.txt"); // Generate postscript
-		System.out.println(tree.toStringTree(parser));
+		//System.out.println(tree.toStringTree(parser));
 	}
 }
