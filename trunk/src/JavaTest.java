@@ -33,8 +33,8 @@ public class JavaTest {
         String s = Utils.escapeWhitespace(Trees.getNodeText(tree.getChild(2).getChild(1).getChild(0), parser), false);
         //buf.append(s);
         System.out.println(s);
-		//tree.inspect(parser); // show in gui
+		tree.inspect(parser); // show in gui
 		//tree.save(parser, "out.txt"); // Generate postscript
-		//System.out.println(tree.toStringTree(parser));
+		System.out.println(tree.toStringTree(parser));
 	}
 }
