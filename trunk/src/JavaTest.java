@@ -28,12 +28,21 @@ public class JavaTest {
 		parser.setBuildParseTree(true);
 		//RuleContext tree = parser.compilationUnit();		
 		RuleContext tree = parser.methodDeclaration();
+<<<<<<< .mine
+
+        TestInfo testInfo = new TestInfo();
+        testInfo.getTestInfo(tree, parser);
+        System.out.println(testInfo.toString());
+        System.out.println(tree.getChild(3).getText());
+		tree.inspect(parser); // show in gui
+=======
 		//StringBuilder buf = new StringBuilder();
         //buf.append("(");
         String s = Utils.escapeWhitespace(Trees.getNodeText(tree.getChild(2).getChild(1).getChild(0), parser), false);
         //buf.append(s);
         System.out.println(s);
 		tree.inspect(parser); // show in gui
+>>>>>>> .r5
 		//tree.save(parser, "out.txt"); // Generate postscript
 		System.out.println(tree.toStringTree(parser));
 	}
