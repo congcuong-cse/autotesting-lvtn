@@ -15,11 +15,12 @@
 	<classpathentry kind="lib" path="org.eclipse.zest.core_1.1.0.v20090504-1850.jar"/>
 	<classpathentry kind="lib" path="org.eclipse.zest.layouts_0.7.0.MJ.jar"/>
 	<classpathentry kind="lib" path="jaxen-1.1.1.jar"/>
-	<classpathentry kind="lib" path="eclipse-equinox-common-3.5.0.jar"/>
 	<classpathentry kind="lib" path="org.eclipse.core.runtime-3.1.0.jar"/>
 	<classpathentry kind="lib" path="org.eclipse.draw2d_3.7.0.v20110425-2050.jar"/>
 	<classpathentry kind="lib" path="org.eclipse.ui.views_3.3.1.M20081112-0800.jar"/>
 	<classpathentry kind="lib" path="org.eclipse.core.commands_3.6.0.I20110111-0800.jar"/>
 	<classpathentry kind="lib" path="org.eclipse.swt.gtk.linux.x86_64_3.6.0.v3650b.jar"/>
+	<classpathentry kind="lib" path="eclipse-equinox-common-3.5.0.jar"/>
+	<classpathentry kind="lib" path="org.eclipse.osgi-3.7.0.v20110221.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
