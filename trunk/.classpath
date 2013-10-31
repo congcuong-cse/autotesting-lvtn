@@ -22,5 +22,6 @@
 	<classpathentry kind="lib" path="org.eclipse.swt.gtk.linux.x86_64_3.6.0.v3650b.jar"/>
 	<classpathentry kind="lib" path="eclipse-equinox-common-3.5.0.jar"/>
 	<classpathentry kind="lib" path="org.eclipse.osgi-3.7.0.v20110221.jar"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
