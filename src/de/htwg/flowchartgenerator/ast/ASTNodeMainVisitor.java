@@ -9,9 +9,11 @@ import org.eclipse.jdt.core.dom.BreakStatement;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.ContinueStatement;
 import org.eclipse.jdt.core.dom.DoStatement;
+import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.ForStatement;
 import org.eclipse.jdt.core.dom.IfStatement;
+import org.eclipse.jdt.core.dom.InfixExpression;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.SwitchCase;
 import org.eclipse.jdt.core.dom.SwitchStatement;
@@ -64,8 +66,8 @@ public class ASTNodeMainVisitor extends ASTVisitor {
 
 	public boolean visit(VariableDeclarationFragment node) {
 		if (null != node.getInitializer()) {
-			INode expNode = new FNode(node.getName().toString(), ASTNode.EXPRESSION_STATEMENT);
-			expNode.setInfo(node.getInitializer().toString());
+			INode expNode = new FNode(node.toString(), ASTNode.EXPRESSION_STATEMENT);
+			expNode.setInfo(node.toString());
 			addToCursor(tmp, expNode);
 			tmp = expNode;
 		}
@@ -75,6 +77,12 @@ public class ASTNodeMainVisitor extends ASTVisitor {
 	public boolean visit(IfStatement node) {
 		// this is the if-Statement. the first element added to the main stream.
 		FNode ifNode = new FNode(node.getExpression().toString(), ASTNode.IF_STATEMENT);
+		InfixExpression e = (InfixExpression) node.getExpression();
+//		System.out.println(e.getLeftOperand().toString());
+//		System.out.println(e.getOperator());
+//		System.out.println(e.getRightOperand().toString());
+		//ASTVisitor visitor_ = new ASTInfixExpressionChecker();
+		//node.getExpression().accept(visitor_);
 		ifNode.setInfo(node.toString());
 		ASTVisitor visitor = new ASTNodeMainVisitor(ifNode);
 		node.getThenStatement().accept(visitor);
