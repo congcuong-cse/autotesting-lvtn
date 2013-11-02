@@ -29,6 +29,7 @@ public class ASTExpressionChecker extends ASTVisitor {
 		then_.setInfo(node.getThenExpression().toString());
 		INode else_ = new FNode(node.getElseExpression().toString(), ASTNode.EXPRESSION_STATEMENT);
 		else_.setInfo(node.getElseExpression().toString());
+		System.out.println(node.getThenExpression().toString());
 		nodes.setValue(node.getExpression().toString());
 		nodes.addNode(then_);
 		nodes.getNodes().add(new FNode("", -1));
