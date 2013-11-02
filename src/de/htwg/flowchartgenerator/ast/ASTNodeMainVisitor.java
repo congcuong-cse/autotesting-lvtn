@@ -77,12 +77,11 @@ public class ASTNodeMainVisitor extends ASTVisitor {
 	public boolean visit(IfStatement node) {
 		// this is the if-Statement. the first element added to the main stream.
 		FNode ifNode = new FNode(node.getExpression().toString(), ASTNode.IF_STATEMENT);
-		InfixExpression e = (InfixExpression) node.getExpression();
 //		System.out.println(e.getLeftOperand().toString());
 //		System.out.println(e.getOperator());
 //		System.out.println(e.getRightOperand().toString());
-		//ASTVisitor visitor_ = new ASTInfixExpressionChecker();
-		//node.getExpression().accept(visitor_);
+		ASTVisitor visitor_ = new ASTInfixExpressionChecker();
+		node.getExpression().accept(visitor_);
 		ifNode.setInfo(node.toString());
 		ASTVisitor visitor = new ASTNodeMainVisitor(ifNode);
 		node.getThenStatement().accept(visitor);
