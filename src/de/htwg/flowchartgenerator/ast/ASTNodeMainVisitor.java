@@ -21,6 +21,7 @@ import org.eclipse.jdt.core.dom.SwitchStatement;
 import org.eclipse.jdt.core.dom.TryStatement;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.WhileStatement;
+import org.eclipse.jdt.core.dom.ReturnStatement;
 import org.eclipse.ui.IWorkbenchPart;
 
 import de.htwg.flowchartgenerator.ast.model.FNode;
@@ -49,14 +50,15 @@ public class ASTNodeMainVisitor extends ASTVisitor {
 		this.wb = targetPart;
 		this.tmp = nodes;
 	}
+
 	
 	public boolean visit(ReturnStatement node){
-		INode expNode = new FNode(node.toString(), ASTNode.RETURN_STATEMENT);
-		expNode.setInfo(node.toString());
-		addToCursor(tmp, expNode);
-		tmp = expNode;
-		return true;
+		INode returnNode = new FNode(node.toString(), ASTNode.RETURN_STATEMENT);
+		returnNode.setInfo(node.toString());
+		addToCursor(tmp, returnNode);
+		return false;
 	}
+
 
 	public boolean visit(ExpressionStatement node) {
 		INode expNode = new FNode(node.getExpression().toString(), ASTNode.EXPRESSION_STATEMENT);

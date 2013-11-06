@@ -43,7 +43,7 @@ public class NodeSerializer {
 	}
 
 	/**
-	 * Writes the data into the file. Named after the classname_methodname.ff3 convention.
+	 * Writes the data into the file. Named after the classname_methodname.atg convention.
 	 */
 	public void doWrite() {
 		System.out.print("\nSerializing...");
