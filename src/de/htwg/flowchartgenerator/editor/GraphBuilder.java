@@ -45,7 +45,8 @@ public class GraphBuilder implements IGraphBuilder {
 	@Override
 	public GraphNode createView(Graph g, INode node, GraphNode linkNode, GraphNode loopNode, GraphNode switchNode, GraphNode parent) {
 		GraphNode newGraphNode = null;
-
+		
+		
 		/************************************
 		 * Handles the EXPRESSION STATEMENTS
 		 ************************************/
@@ -283,11 +284,13 @@ public class GraphBuilder implements IGraphBuilder {
 				new GraphConnection(g, ZestStyles.CONNECTIONS_DIRECTED, linkNode, loopNode);
 			}
 		}
+		
 		/************************************
 		 * For the case that there is no last node
 		 ************************************/
-		if (node.getNodes().size() == 0 && linkNode == null) {
-			GraphNode endGraphNode = new GraphNode(g, SWT.NONE, "END");
+		if (node.getNodes().size() == 0 && linkNode == null) {			
+			GraphNode endGraphNode = new GraphNode(g, SWT.NONE, "END");		
+			
 			if (node.getType() != 0 && null != newGraphNode) {
 				new GraphConnection(g, ZestStyles.CONNECTIONS_DIRECTED, newGraphNode, endGraphNode);
 			}
