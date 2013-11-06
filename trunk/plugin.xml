@@ -16,7 +16,7 @@
          point="org.eclipse.ui.popupMenus">
       <objectContribution
             objectClass="org.eclipse.jdt.core.IMethod"
-            id="PluginProject4.contribution1">
+            id="PluginATG.contribution1">
          <menu
                label="Auto Test Generator"
                path="additions"
