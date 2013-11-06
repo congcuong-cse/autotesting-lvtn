@@ -26,7 +26,11 @@ public final class NodeNormalizer {
 		System.out.print("\nNormalizing ...");
 		while (null != tmp && tmp.getNodes().size() > 0) {
 			if (tmp.getType() == ASTNode.EXPRESSION_STATEMENT) {
-				tmp = tmp.getNodes().get(0);
+				tmp = tmp.getNodes().get(0);			
+//			} else if(tmp.getType() == ASTNode.RETURN_STATEMENT) {
+//				INode end = new FNode("END", 0);
+//				tmp.addNode(end);
+//				break;
 			} else if (tmp.getType() == ASTNode.IF_STATEMENT && tmp.getNodes().size() > 1) {
 				tmp = tmp.getNodes().get(1);
 				if (tmp.getType() <= 0) {

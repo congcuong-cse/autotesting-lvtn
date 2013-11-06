@@ -6,10 +6,10 @@
       <editor
             class="de.htwg.flowchartgenerator.editor.FlowChartEditor"
             default="true"
-            extensions="ff3"
+            extensions="atg"
             icon="icons/plugin-icon16.png"
             id="PluginATG.editor1"
-            name="Flow Chart Viewer">
+            name="ATG Chart">
       </editor>
    </extension>
    <extension

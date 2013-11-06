@@ -25,6 +25,7 @@ import de.htwg.flowchartgenerator.ast.model.INode;
  */
 public class GraphBuilder implements IGraphBuilder {
 	private NodeAdmin nodeAdmin = NodeAdminFactory.getInstance();
+	private GraphNode nodeEnd; 
 
 	/**
 	 * This method generates a graph with the nodes from the model. Calls itself recursively and should never return null.
@@ -45,12 +46,12 @@ public class GraphBuilder implements IGraphBuilder {
 	@Override
 	public GraphNode createView(Graph g, INode node, GraphNode linkNode, GraphNode loopNode, GraphNode switchNode, GraphNode parent) {
 		GraphNode newGraphNode = null;
-		
-		
+
 		/************************************
 		 * Handles the EXPRESSION STATEMENTS
 		 ************************************/
 		if (node.getType() == ASTNode.EXPRESSION_STATEMENT) {
+			
 			String expression = NODE_DEFAULT_TEXT;
 			if (node.getValue().length() <= NODE_DEFAULT_TEXT.length()) {
 				expression = node.getValue();
@@ -60,6 +61,8 @@ public class GraphBuilder implements IGraphBuilder {
 			if (expression.equals("START")) {
 				newGraphNode.setBackgroundColor(GREEN_COLOR);
 				nodeAdmin.setRoot(node);
+				nodeEnd =  new GraphNode(g, SWT.NONE, "END");
+				nodeEnd.setBackgroundColor(RED_COLOR);
 			}
 			if (node.getNodes().size() > 0) {
 				GraphNode nn = createView(g, node.getNodes().get(0), linkNode, loopNode, switchNode, newGraphNode);
@@ -286,18 +289,30 @@ public class GraphBuilder implements IGraphBuilder {
 		}
 		
 		/************************************
+		 * Handles the RETURN STATEMENTS
+		 ************************************/
+		if(node.getType() == ASTNode.RETURN_STATEMENT){
+			newGraphNode = new GraphNode(g, SWT.NONE, node.getValue());
+			if (null != newGraphNode) {
+				new GraphConnection(g, ZestStyles.CONNECTIONS_DIRECTED, newGraphNode, nodeEnd);
+			}
+		}
+		
+		/************************************
 		 * For the case that there is no last node
 		 ************************************/
-		if (node.getNodes().size() == 0 && linkNode == null) {			
-			GraphNode endGraphNode = new GraphNode(g, SWT.NONE, "END");		
+
+		if (node.getNodes().size() == 0 && linkNode == null) {
+			//GraphNode endGraphNode = new GraphNode(g, SWT.NONE, "END");
 			
+
 			if (node.getType() != 0 && null != newGraphNode) {
-				new GraphConnection(g, ZestStyles.CONNECTIONS_DIRECTED, newGraphNode, endGraphNode);
+				new GraphConnection(g, ZestStyles.CONNECTIONS_DIRECTED, newGraphNode, nodeEnd);
 			}
 			if (null == newGraphNode) {
-				newGraphNode = endGraphNode;
+				newGraphNode = nodeEnd;
 			}
-			endGraphNode.setBackgroundColor(RED_COLOR);
+			//endGraphNode.setBackgroundColor(RED_COLOR);
 		}
 		if (node.isCovered()) {
 			newGraphNode.setBackgroundColor(H_COLOR);
@@ -306,6 +321,7 @@ public class GraphBuilder implements IGraphBuilder {
 			newGraphNode.setTooltip(new Label(node.getInfo()));
 			nodeAdmin.add(new NodeContainer(node, newGraphNode));
 		}
+		
 		return newGraphNode;
 	}
 

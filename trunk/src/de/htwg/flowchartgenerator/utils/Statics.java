@@ -8,7 +8,7 @@ import org.eclipse.swt.graphics.Color;
  */
 public final class Statics {
 	
-	public final static String EXTENTION = ".ff3";
+	public final static String EXTENTION = ".atg";
 	public final static String CFG_DIR = "/cfg";
 	public final static String SEPARATOR = System.getProperty("file.separator");
 	public final static String EDITOR_NAME = "Flow Chart Editor";
