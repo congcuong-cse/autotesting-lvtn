@@ -14,6 +14,7 @@ import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.ForStatement;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.InfixExpression;
+import org.eclipse.jdt.core.dom.ReturnStatement;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.SwitchCase;
 import org.eclipse.jdt.core.dom.SwitchStatement;
@@ -48,6 +49,14 @@ public class ASTNodeMainVisitor extends ASTVisitor {
 		this.wb = targetPart;
 		this.tmp = nodes;
 	}
+	
+	public boolean visit(ReturnStatement node){
+		INode expNode = new FNode(node.toString(), ASTNode.RETURN_STATEMENT);
+		expNode.setInfo(node.toString());
+		addToCursor(tmp, expNode);
+		tmp = expNode;
+		return true;
+	}
 
 	public boolean visit(ExpressionStatement node) {
 		INode expNode = new FNode(node.getExpression().toString(), ASTNode.EXPRESSION_STATEMENT);
@@ -80,8 +89,8 @@ public class ASTNodeMainVisitor extends ASTVisitor {
 //		System.out.println(e.getLeftOperand().toString());
 //		System.out.println(e.getOperator());
 //		System.out.println(e.getRightOperand().toString());
-//		ASTVisitor visitor_ = new ASTInfixExpressionChecker();
-//		node.getExpression().accept(visitor_);
+		ASTVisitor visitor_ = new ASTInfixExpressionChecker();
+		node.getExpression().accept(visitor_);
 		ifNode.setInfo(node.toString());
 		ASTVisitor visitor = new ASTNodeMainVisitor(ifNode);
 		node.getThenStatement().accept(visitor);
