@@ -92,9 +92,10 @@ public class ASTNodeMainVisitor extends ASTVisitor {
 //		System.out.println(e.getLeftOperand().toString());
 //		System.out.println(e.getOperator());
 //		System.out.println(e.getRightOperand().toString());
-		LNode lNode = new LNode(node.getExpression().toString(), ASTNode.IF_STATEMENT);
-		ASTVisitor visitor_ = new ASTInfixExpressionChecker(lNode);
-		node.getExpression().accept(visitor_);
+		Expression expr = node.getExpression();
+		FNode tmpNode = new FNode("FUCK",0);
+		ASTVisitor visitor_ = new ASTInfixExpressionChecker(tmpNode);
+		expr.accept(visitor_);
 		ifNode.setInfo(node.toString());
 		ASTVisitor visitor = new ASTNodeMainVisitor(ifNode);
 		node.getThenStatement().accept(visitor);
