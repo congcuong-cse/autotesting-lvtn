@@ -7,9 +7,6 @@ import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.InfixExpression;
 import org.eclipse.jdt.core.dom.InfixExpression.Operator;
-import org.eclipse.jdt.core.dom.InfixExpression.Operator.*;
-
-import de.htwg.flowchartgenerator.ast.model.FNode;
 import de.htwg.flowchartgenerator.ast.model.INode;
 import de.htwg.flowchartgenerator.ast.model.LNode;
 
@@ -18,21 +15,15 @@ public class ASTInfixExpressionChecker extends ASTVisitor {
 	INode nodes = null;
 	//String str = null;
 	
-	final public List<InfixExpression.Operator> op = Arrays.asList(Operator.CONDITIONAL_OR, Operator.CONDITIONAL_AND, Operator.OR, Operator.AND, Operator.XOR);
+	final public static List<InfixExpression.Operator> op = Arrays.asList(Operator.CONDITIONAL_OR, Operator.CONDITIONAL_AND, Operator.OR, Operator.AND, Operator.XOR);
 	
 	public ASTInfixExpressionChecker(INode node) {
 		this.nodes = node;
 	}
 	
-	public boolean visit(InfixExpression node){
-		
-		INode result =  visit_(node);
-		this.nodes.setNodes(result.getNodes());
-		this.nodes.setValue(result.getValue());
-		this.nodes.setOperator(result.getOperator());
-		this.nodes.setInfo(result.getInfo());
-
-		return true;
+	public boolean visit(InfixExpression expr){
+		this.nodes.addNode(visit_(expr));
+		return false;
 	}
 	
 	public INode visit_(Expression expr){
@@ -46,11 +37,13 @@ public class ASTInfixExpressionChecker extends ASTVisitor {
 			result.setOperator(((InfixExpression) expr).getOperator());
 			result.setValue(expr.toString());
 			result.setInfo(expr.toString());
+			result.setType(ASTNode.INFIX_EXPRESSION);
 			
 		}else{
 			result.setValue(expr.toString());
 			result.setOperator(null);
 			result.setInfo(expr.toString());
+			result.setType(ASTNode.EXPRESSION_STATEMENT);
 		}
 		return result;
 	}
