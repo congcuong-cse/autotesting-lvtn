@@ -22,6 +22,7 @@ public class ASTInfixExpressionChecker extends ASTVisitor {
 	}
 	
 	public boolean visit(InfixExpression expr){
+		//TODO
 		this.nodes.addNode(visit_(expr));
 		return false;
 	}
