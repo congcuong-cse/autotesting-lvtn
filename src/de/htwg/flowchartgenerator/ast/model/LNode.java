@@ -9,27 +9,32 @@ import org.eclipse.jdt.core.dom.InfixExpression;
 
 
 public class LNode extends FNode {
-	private List<INode> exprs = new ArrayList<INode>();
-	private InfixExpression.Operator operator;
+	private InfixExpression.Operator operator = null;
 	
-	public LNode(List<INode> exprs, InfixExpression.Operator operator){
-		this.exprs = exprs;
+	public LNode(List<INode> nodes, String value, int type, InfixExpression.Operator operator) {
+		this.nodes = nodes;
+		this.value = value;
+		this.type = type;
 		this.operator = operator;
 	}
-	
-	public void addExpr(INode node){
-		this.exprs.add(node);
+
+	public LNode(String value, int type) {
+		this.value = value;
+		this.type = type;
 	}
 	
-	public List<INode> getExprs(){
-		return this.exprs;
+	public LNode(){
+
 	}
 	
-	public void setOperator(InfixExpression.Operator operator){
-		this.operator = operator;
-	}
-	
+	@Override
 	public InfixExpression.Operator getOperator(){
 		return this.operator;
 	}
+	
+	@Override
+	public void setOperator(InfixExpression.Operator operator ){
+		this.operator = operator;
+	}
+
 }
