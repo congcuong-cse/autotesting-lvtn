@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.core.dom.InfixExpression;
+
 /**
  * This class is a representation of an INode interface. Java elements are represented as nodes linked to each other Witch means that it
  * represents the model of the algorithm.
@@ -12,12 +14,12 @@ import java.util.List;
  * 
  */
 public class FNode implements Serializable, Cloneable, INode {
-	private static final long serialVersionUID = 4372661154947355355L;
-	private List<INode> nodes = new ArrayList<INode>();
-	private String value = "";
-	private String fullInfo = "";
-	private int type = -1;
-	private boolean folded = false;
+	protected static final long serialVersionUID = 4372661154947355355L;
+	protected List<INode> nodes = new ArrayList<INode>();
+	protected String value = "";
+	protected String fullInfo = "";
+	protected int type = -1;
+	protected boolean folded = false;
 
 	public String toString() {
 		return getValue();
@@ -100,6 +102,16 @@ public class FNode implements Serializable, Cloneable, INode {
 	@Override
 	public void setFolded(boolean folded) {
 		this.folded = folded;
+	}
+	
+	@Override
+	public void setOperator(InfixExpression.Operator operator ){
+
+	}
+	
+	@Override
+	public InfixExpression.Operator getOperator(){
+		return null;
 	}
 
 }

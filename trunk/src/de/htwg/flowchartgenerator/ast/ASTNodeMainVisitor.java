@@ -26,6 +26,7 @@ import org.eclipse.ui.IWorkbenchPart;
 
 import de.htwg.flowchartgenerator.ast.model.FNode;
 import de.htwg.flowchartgenerator.ast.model.INode;
+import de.htwg.flowchartgenerator.ast.model.LNode;
 import de.htwg.flowchartgenerator.controller.Controller;
 
 /**
@@ -91,7 +92,8 @@ public class ASTNodeMainVisitor extends ASTVisitor {
 //		System.out.println(e.getLeftOperand().toString());
 //		System.out.println(e.getOperator());
 //		System.out.println(e.getRightOperand().toString());
-		ASTVisitor visitor_ = new ASTInfixExpressionChecker();
+		LNode lNode = new LNode(node.getExpression().toString(), ASTNode.IF_STATEMENT);
+		ASTVisitor visitor_ = new ASTInfixExpressionChecker(lNode);
 		node.getExpression().accept(visitor_);
 		ifNode.setInfo(node.toString());
 		ASTVisitor visitor = new ASTNodeMainVisitor(ifNode);

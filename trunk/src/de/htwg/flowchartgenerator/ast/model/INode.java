@@ -2,6 +2,8 @@ package de.htwg.flowchartgenerator.ast.model;
 
 import java.util.List;
 
+import org.eclipse.jdt.core.dom.InfixExpression;
+
 /**
  * Model Interface. The listed methods are the ones needed for the 
  * computation of the algorithm. 
@@ -35,4 +37,8 @@ public interface INode {
 	
 	public abstract boolean isFolded();
 	public abstract void setFolded(boolean folded);
+	
+	public abstract void setOperator(InfixExpression.Operator operator );
+	public abstract InfixExpression.Operator getOperator();
+
 }

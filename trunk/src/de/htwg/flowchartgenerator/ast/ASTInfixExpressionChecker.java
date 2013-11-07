@@ -1,47 +1,58 @@
 package de.htwg.flowchartgenerator.ast;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.InfixExpression;
+import org.eclipse.jdt.core.dom.InfixExpression.Operator;
+import org.eclipse.jdt.core.dom.InfixExpression.Operator.*;
 
 import de.htwg.flowchartgenerator.ast.model.FNode;
 import de.htwg.flowchartgenerator.ast.model.INode;
 import de.htwg.flowchartgenerator.ast.model.LNode;
 
+
 public class ASTInfixExpressionChecker extends ASTVisitor {
 	INode nodes = null;
-	String str = null;
+	//String str = null;
+	
+	final public List<InfixExpression.Operator> op = Arrays.asList(Operator.CONDITIONAL_OR, Operator.CONDITIONAL_AND, Operator.OR, Operator.AND, Operator.XOR);
+	
+	public ASTInfixExpressionChecker(INode node) {
+		this.nodes = node;
+	}
 	
 	public boolean visit(InfixExpression node){
 		
-		visit_(node);
+		INode result =  visit_(node);
+		this.nodes.setNodes(result.getNodes());
+		this.nodes.setValue(result.getValue());
+		this.nodes.setOperator(result.getOperator());
+		this.nodes.setInfo(result.getInfo());
+
 		return true;
 	}
 	
-	public LNode visit_(InfixExpression node){
-		List<INode> exprs = new ArrayList<INode>();
-		InfixExpression.Operator operator = node.getOperator();
+	public INode visit_(Expression expr){
+		INode result = new LNode();
 		
-		if(node.getLeftOperand() instanceof InfixExpression){
-			LNode left = visit_((InfixExpression) node.getLeftOperand());
-			LNode right = visit_((InfixExpression) node.getRightOperand());
-			exprs.add(left);
-			exprs.add(right);
+		if(expr instanceof InfixExpression && op.contains(((InfixExpression) expr).getOperator()) ){
+			INode left = visit_(((InfixExpression) expr).getLeftOperand());
+			INode right = visit_(((InfixExpression) expr).getRightOperand());
+			result.addNode(left);
+			result.addNode(right);			
+			result.setOperator(((InfixExpression) expr).getOperator());
+			result.setValue(expr.toString());
+			result.setInfo(expr.toString());
+			
 		}else{
-			INode left = new FNode(node.getLeftOperand().toString(), ASTNode.EXPRESSION_STATEMENT);
-			left.setInfo(node.getLeftOperand().toString());
-			INode right = new FNode(node.getRightOperand().toString(), ASTNode.EXPRESSION_STATEMENT);
-			left.setInfo(node.getRightOperand().toString());
-			exprs.add(left);
-			exprs.add(right);
+			result.setValue(expr.toString());
+			result.setOperator(null);
+			result.setInfo(expr.toString());
 		}
-		
-		LNode lnode = new LNode(exprs, operator);
-		return lnode;
+		return result;
 	}
 
 }
