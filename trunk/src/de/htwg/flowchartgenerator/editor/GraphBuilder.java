@@ -166,7 +166,8 @@ public class GraphBuilder implements IGraphBuilder {
 		 * Handles the Switch and SwitchCase statements.
 		 ************************************/
 		if (node.getType() == ASTNode.SWITCH_STATEMENT) {
-			newGraphNode = new GraphNode(g, SWT.NONE, node.getValue());
+			//newGraphNode = new GraphNode(g, SWT.NONE, node.getValue());
+			GraphNode newGraphNode_ = null;
 			GraphNode tail = null;
 			tail = createView(g, node.getNodes().get(1), linkNode, loopNode, switchNode, newGraphNode);
 			if (tail == null) {
@@ -174,10 +175,18 @@ public class GraphBuilder implements IGraphBuilder {
 			}
 			GraphNode lastButOne = null;
 			if (node.getSize() > 2) {
-				for (int i = node.getSize() - 1; i >= 2; i--) {
+				INode tn_ = (node.getNodes().get(2).getSize() > 0) ? node.getNodes().get(2).getNodes().get(0) : node.getNodes().get(2);
+				lastButOne = createView(g, tn_, (lastButOne == null) ? tail
+						: lastButOne, tail, lastButOne, newGraphNode);
+				newGraphNode = lastButOne;
+				newGraphNode_ = lastButOne;
+				for (int i = 3; i <= node.getSize() - 1; i++) {
+					
 					INode tn = (node.getNodes().get(i).getSize() > 0) ? node.getNodes().get(i).getNodes().get(0) : node.getNodes().get(i);
-					new GraphConnection(g, ZestStyles.CONNECTIONS_DIRECTED, newGraphNode, lastButOne = createView(g, tn, (lastButOne == null) ? tail
+					new GraphConnection(g, ZestStyles.CONNECTIONS_DIRECTED, newGraphNode_, lastButOne = createView(g, tn, (lastButOne == null) ? tail
 							: lastButOne, tail, lastButOne, newGraphNode));
+					newGraphNode_ = lastButOne;
+					
 
 				}
 			}
