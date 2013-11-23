@@ -26,6 +26,7 @@ import de.htwg.flowchartgenerator.ast.model.INode;
 public class GraphBuilder implements IGraphBuilder {
 	private NodeAdmin nodeAdmin = NodeAdminFactory.getInstance();
 	private GraphNode nodeEnd; 
+	private GraphNode nodeTemp;
 
 	/**
 	 * This method generates a graph with the nodes from the model. Calls itself recursively and should never return null.
@@ -53,11 +54,16 @@ public class GraphBuilder implements IGraphBuilder {
 			newGraphNode = new GraphNode(g, SWT.NONE, value);
 			if (node.getNodes().size() > 0) {
 				GraphNode nn = createView(g, node.getNodes().get(0), linkNode, loopNode, switchNode, newGraphNode);
+				
 				if (null != nn)
+					nodeTemp = nn;
 					new GraphConnection(g, ZestStyles.CONNECTIONS_DIRECTED, newGraphNode, nn);
 			}
-			if (node.getNodes().size() == 0 && linkNode != null) {
-				new GraphConnection(g, ZestStyles.CONNECTIONS_DIRECTED, newGraphNode, linkNode);
+//			if (node.getNodes().size() == 0 && linkNode != null) {
+//				new GraphConnection(g, ZestStyles.CONNECTIONS_DIRECTED, newGraphNode, linkNode);
+//			}
+			if(node.getNodes().size()== 0){
+				new GraphConnection(g, ZestStyles.CONNECTIONS_DIRECTED, newGraphNode, nodeTemp);
 			}
 		}
 		
@@ -181,7 +187,8 @@ public class GraphBuilder implements IGraphBuilder {
 		 ************************************/
 		if (node.getType() == ASTNode.SWITCH_STATEMENT) {
 			//TODO
-			newGraphNode = new GraphNode(g, SWT.NONE, node.getValue());
+			//newGraphNode = new GraphNode(g, SWT.NONE, node.getValue());
+			GraphNode newGraphNode_;
 			GraphNode tail = null;
 			tail = createView(g, node.getNodes().get(1), linkNode, loopNode, switchNode, null);
 			if (tail == null) {
@@ -189,12 +196,18 @@ public class GraphBuilder implements IGraphBuilder {
 			}
 			GraphNode lastButOne = null;
 			if (node.getSize() > 2) {
-				for (int i = node.getSize() - 1; i >= 2; i--) {
+				INode tn_ = node.getNodes().get(node.getSize() - 1);
+				//INode tn = (node.getNodes().get(i).getSize() > 0) ? node.getNodes().get(i).getNodes().get(0) : node.getNodes().get(i);
+				newGraphNode_ = createView(g, tn_, (lastButOne == null) ? tail : lastButOne, tail, lastButOne, newGraphNode);
+				for (int i = node.getSize() - 2; i >= 2; i--) {
 					INode tn = node.getNodes().get(i);
 					//INode tn = (node.getNodes().get(i).getSize() > 0) ? node.getNodes().get(i).getNodes().get(0) : node.getNodes().get(i);
-					new GraphConnection(g, ZestStyles.CONNECTIONS_DIRECTED, newGraphNode, 
-						lastButOne = createView(g, tn, (lastButOne == null) ? tail : lastButOne, tail, lastButOne, newGraphNode));
-
+					new GraphConnection(g, ZestStyles.CONNECTIONS_DIRECTED, lastButOne = createView(g, tn, (lastButOne == null) ? tail : lastButOne, tail, lastButOne, newGraphNode), newGraphNode_ 
+						);
+					newGraphNode_ = lastButOne;
+					if(i == 2){
+						newGraphNode = newGraphNode_;
+					}
 				}
 			}
 		}
