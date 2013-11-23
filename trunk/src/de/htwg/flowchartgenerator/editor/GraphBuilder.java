@@ -47,6 +47,20 @@ public class GraphBuilder implements IGraphBuilder {
 	public GraphNode createView(Graph g, INode node, GraphNode linkNode, GraphNode loopNode, GraphNode switchNode, GraphNode parent) {
 		GraphNode newGraphNode = null;
 
+		
+		if (node.getType() ==  ASTNode.SWITCH_CASE){
+			String value = node.getValue();
+			newGraphNode = new GraphNode(g, SWT.NONE, value);
+			if (node.getNodes().size() > 0) {
+				GraphNode nn = createView(g, node.getNodes().get(0), linkNode, loopNode, switchNode, newGraphNode);
+				if (null != nn)
+					new GraphConnection(g, ZestStyles.CONNECTIONS_DIRECTED, newGraphNode, nn);
+			}
+			if (node.getNodes().size() == 0 && linkNode != null) {
+				new GraphConnection(g, ZestStyles.CONNECTIONS_DIRECTED, newGraphNode, linkNode);
+			}
+		}
+		
 		/************************************
 		 * Handles the EXPRESSION STATEMENTS
 		 ************************************/
@@ -166,60 +180,23 @@ public class GraphBuilder implements IGraphBuilder {
 		 * Handles the Switch and SwitchCase statements.
 		 ************************************/
 		if (node.getType() == ASTNode.SWITCH_STATEMENT) {
-			//newGraphNode = new GraphNode(g, SWT.NONE, node.getValue());
-			GraphNode newGraphNode_ = null;
+			//TODO
+			newGraphNode = new GraphNode(g, SWT.NONE, node.getValue());
 			GraphNode tail = null;
-			tail = createView(g, node.getNodes().get(1), linkNode, loopNode, switchNode, newGraphNode);
+			tail = createView(g, node.getNodes().get(1), linkNode, loopNode, switchNode, null);
 			if (tail == null) {
 				tail = linkNode;
 			}
 			GraphNode lastButOne = null;
 			if (node.getSize() > 2) {
-				INode tn_ = (node.getNodes().get(2).getSize() > 0) ? node.getNodes().get(2).getNodes().get(0) : node.getNodes().get(2);
-				lastButOne = createView(g, tn_, (lastButOne == null) ? tail
-						: lastButOne, tail, lastButOne, newGraphNode);
-				newGraphNode = lastButOne;
-				newGraphNode_ = lastButOne;
-				for (int i = 3; i <= node.getSize() - 1; i++) {
-					
-					INode tn = (node.getNodes().get(i).getSize() > 0) ? node.getNodes().get(i).getNodes().get(0) : node.getNodes().get(i);
-					new GraphConnection(g, ZestStyles.CONNECTIONS_DIRECTED, newGraphNode_, lastButOne = createView(g, tn, (lastButOne == null) ? tail
-							: lastButOne, tail, lastButOne, newGraphNode));
-					newGraphNode_ = lastButOne;
-					
+				for (int i = node.getSize() - 1; i >= 2; i--) {
+					INode tn = node.getNodes().get(i);
+					//INode tn = (node.getNodes().get(i).getSize() > 0) ? node.getNodes().get(i).getNodes().get(0) : node.getNodes().get(i);
+					new GraphConnection(g, ZestStyles.CONNECTIONS_DIRECTED, newGraphNode, 
+						lastButOne = createView(g, tn, (lastButOne == null) ? tail : lastButOne, tail, lastButOne, newGraphNode));
 
 				}
 			}
-		}
-
-		/************************************
-		 * Handles the try-catch-finally statements.
-		 ************************************/
-		if (node.getType() == ASTNode.TRY_STATEMENT) {
-			newGraphNode = new GraphNode(g, SWT.NONE, node.getValue());
-			GraphNode tail = null;
-			GraphNode newTail = null;
-			if (node.getNodes().size() != 0) {
-				tail = createView(g, node.getNodes().get(1), linkNode, loopNode, switchNode, newGraphNode);
-				if (tail == null) {
-					tail = linkNode;
-				}
-				if (node.getSize() > 2) {
-					for (int i = node.getSize() - 1; i >= 0; i--) {
-						if (i == 1) {
-							continue;
-						}
-						if (node.getNodes().get(i).getType() == ASTNode.CATCH_CLAUSE) {
-							newTail = createView(g, node.getNodes().get(i).getNodes().get(0), tail, loopNode, switchNode, newGraphNode);
-							tail = newTail;
-							continue;
-						}
-						new GraphConnection(g, ZestStyles.CONNECTIONS_DIRECTED, newGraphNode, createView(g, node.getNodes().get(i), tail, loopNode,
-								switchNode, newGraphNode));
-					}
-				}
-			}
-
 		}
 		/************************************
 		 * Handles the FOR and WHILE-Loops No difference in path consuming between the to loops.
