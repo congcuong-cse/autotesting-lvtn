@@ -204,7 +204,14 @@ public class ASTNodeMainVisitor extends ASTVisitor {
 		for (Iterator iterator = l.iterator(); iterator.hasNext();) {
 			Statement tNode = (Statement) iterator.next();
 			if (tNode instanceof SwitchCase) {
-				tCase = new FNode(tNode.toString(), ASTNode.EXPRESSION_STATEMENT);
+				if(((SwitchCase) tNode).getExpression() != null){
+					System.out.println(((SwitchCase) tNode).getExpression().toString());
+					tCase = new FNode(node.getExpression().toString() +"==" + ((SwitchCase) tNode).getExpression().toString(), ASTNode.SWITCH_CASE);
+				}
+				else{
+					tCase = new FNode(tNode.toString(), ASTNode.SWITCH_CASE);
+				}
+					//caseNode.addNode(tCase);
 				switchNode.addNode(tCase);
 				continue;
 			}
