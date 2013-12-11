@@ -105,12 +105,12 @@ public class FNode implements Serializable, Cloneable, INode {
 	}
 	
 	@Override
-	public void setOperator(InfixExpression.Operator operator ){
+	public void setOperator(String operator ){
 
 	}
 	
 	@Override
-	public InfixExpression.Operator getOperator(){
+	public String getOperator(){
 		return null;
 	}
 

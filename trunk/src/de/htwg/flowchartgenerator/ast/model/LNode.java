@@ -1,17 +1,17 @@
 package de.htwg.flowchartgenerator.ast.model;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.jdt.core.dom.Expression;
-import org.eclipse.jdt.core.dom.InfixExpression;
 
 
 
 public class LNode extends FNode {
-	private InfixExpression.Operator operator = null;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1841889678850365955L;
+	private String operator = null;
 	
-	public LNode(List<INode> nodes, String value, int type, InfixExpression.Operator operator) {
+	public LNode(List<INode> nodes, String value, int type, String operator) {
 		this.nodes = nodes;
 		this.value = value;
 		this.type = type;
@@ -28,12 +28,12 @@ public class LNode extends FNode {
 	}
 	
 	@Override
-	public InfixExpression.Operator getOperator(){
+	public String getOperator(){
 		return this.operator;
 	}
 	
 	@Override
-	public void setOperator(InfixExpression.Operator operator ){
+	public void setOperator(String operator ){
 		this.operator = operator;
 	}
 

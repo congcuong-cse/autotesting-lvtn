@@ -1,7 +1,11 @@
 package de.htwg.flowchartgenerator.editor;
 
+import hcmut.cse.testcasegenerator.model.TestcaseNode;
+
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
+import java.util.ArrayList;
+import java.util.Stack;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -23,15 +27,16 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.zest.core.viewers.GraphViewer;
 import org.eclipse.zest.core.widgets.Graph;
+import org.eclipse.zest.core.widgets.GraphNode;
+import org.eclipse.zest.core.widgets.GraphConnection;
 import org.eclipse.zest.core.widgets.ZestStyles;
 import org.eclipse.zest.layouts.LayoutStyles;
 
 import de.htwg.flowchartgenerator.ast.model.FNode;
 import de.htwg.flowchartgenerator.ast.model.INode;
-import de.htwg.flowchartgenerator.controller.MacCabeAnalyzer;
 import de.htwg.flowchartgenerator.editor.FlowChartOutlinePage.OutlineModel;
 import de.htwg.flowchartgenerator.utils.NodeNormalizer;
-import de.htwg.flowchartgenerator.utils.Statics;
+import hcmut.cse.testcasegenerator.TestcaseGenerator;
 
 /**
  * The Editor. Uses a GraphViewer from the zest library as control to paint the
@@ -52,6 +57,17 @@ public class FlowChartEditor extends EditorPart implements IAdaptable {
 		IGraphBuilder graphBuilder = GraphBuilderFactory.getInstance();
 		g = (Graph) graphicalViewer.getControl();
 		graphBuilder.createView(g, nodes);
+		//TODO		
+		System.out.println("Generator paths:");
+		
+		TestcaseGenerator tg = new TestcaseGenerator();
+		tg.breadthFirstTraversal(g);
+		for(ArrayList<TestcaseNode> i: tg.getTests()){
+			System.out.println(i);
+		}
+		System.out.println();
+		
+		
 		outlineModel = new OutlineModel(g.getNodes().size(), g.getConnections().size());
 //		MacCabeAnalyzer.analyzeMacCabe(ou	tlineModel, g);
 		GraphLayoutAlgorithm gla = new GraphLayoutAlgorithm(LayoutStyles.NO_LAYOUT_NODE_RESIZING);
