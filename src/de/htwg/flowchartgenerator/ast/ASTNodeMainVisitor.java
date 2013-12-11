@@ -54,8 +54,8 @@ public class ASTNodeMainVisitor extends ASTVisitor {
 
 	
 	public boolean visit(ReturnStatement node){
-		INode returnNode = new FNode(node.toString(), ASTNode.RETURN_STATEMENT);
-		returnNode.setInfo(node.toString());
+		INode returnNode = new FNode("return " + node.getExpression().toString(), ASTNode.RETURN_STATEMENT);
+		returnNode.setInfo("return " + node.getExpression().toString());
 		addToCursor(tmp, returnNode);
 		return false;
 	}
@@ -89,25 +89,32 @@ public class ASTNodeMainVisitor extends ASTVisitor {
 	public boolean visit(IfStatement node) {
 		// this is the if-Statement. the first element added to the main stream.
 		FNode ifNode = new FNode(node.getExpression().toString(), ASTNode.IF_STATEMENT);
-//		System.out.println(e.getLeftOperand().toString());
-//		System.out.println(e.getOperator());
-//		System.out.println(e.getRightOperand().toString());
 		Expression expr = node.getExpression();
-		FNode tmpNode = new FNode("FUCK",0);
-		ASTVisitor visitor_ = new ASTInfixExpressionChecker(tmpNode);
-		expr.accept(visitor_);
+		
+		ASTLogicalExpressionChecker alc = new ASTLogicalExpressionChecker();
+		INode tmpNode = alc.visit_(expr);
+		//alc.travel_lrn(tmpNode);
+		//tmpNode.setType(ASTNode.IF_STATEMENT);
+
+		
 		ifNode.setInfo(node.toString());
 		ASTVisitor visitor = new ASTNodeMainVisitor(ifNode);
+//		ASTVisitor visitor = new ASTNodeMainVisitor(tmpNode);
 		node.getThenStatement().accept(visitor);
 		addToCursor(tmp, ifNode);
 		tmp = ifNode;
+//		addToCursor(tmp, tmpNode);
+//		tmp = tmpNode;
+		if (tmp.getSize() > 0) {
+			tmp.getNodes().add(new FNode("", -1));
+		}
 		Statement elseSt = node.getElseStatement();
 		if (null != elseSt) {
 			// if there is a else-statement than it should be the third element
 			// the second one is left empty for the main stream
-			if (tmp.getSize() > 0) {
-				tmp.getNodes().add(new FNode("", -1));
-			}
+//			if (tmp.getSize() > 0) {
+//				tmp.getNodes().add(new FNode("", -1));
+//			}
 
 			INode tn = new FNode("Else", ASTNode.EMPTY_STATEMENT);
 			visitor = new ASTNodeMainVisitor(tn);
@@ -116,6 +123,8 @@ public class ASTNodeMainVisitor extends ASTVisitor {
 				tmp.addNode(tn);
 			}
 		}
+		//TODO
+		tmp.addNode(tmpNode);
 		if(tmp.getSize()==0){
 			tmp.setType(ASTNode.EXPRESSION_STATEMENT);
 		}
@@ -157,40 +166,51 @@ public class ASTNodeMainVisitor extends ASTVisitor {
 	}
 
 	public boolean visit(ForStatement node) {
-		FNode forNode = new FNode(node.getExpression().toString(), ASTNode.FOR_STATEMENT);
+		FNode forNode = new FNode("FOR", ASTNode.FOR_STATEMENT);
 		forNode.setInfo(node.toString());
 		ASTVisitor visitor = new ASTNodeMainVisitor(forNode);
 		node.getBody().accept(visitor);
 		if (forNode.getSize() == 0) {
 			forNode.setType(ASTNode.EXPRESSION_STATEMENT);
 		}
+		forNode.addNode(new FNode("", -1));
+		ASTLogicalExpressionChecker alc = new ASTLogicalExpressionChecker();
+		INode tmpNode = alc.visit_(node.getExpression());
+		forNode.addNode(tmpNode);
 		addToCursor(tmp, forNode);
 		tmp = forNode;
 		return false;
 	}
 
 	public boolean visit(WhileStatement node) {
-		FNode forNode = new FNode(node.getExpression().toString(), ASTNode.FOR_STATEMENT);
+		FNode forNode = new FNode("WHILE", ASTNode.FOR_STATEMENT);
 		forNode.setInfo(node.toString());
 		ASTVisitor visitor = new ASTNodeMainVisitor(forNode);
 		node.getBody().accept(visitor);
 		if (forNode.getSize() == 0) {
 			forNode.setType(ASTNode.EXPRESSION_STATEMENT);
 		}
+		forNode.addNode(new FNode("", -1));
+		ASTLogicalExpressionChecker alc = new ASTLogicalExpressionChecker();
+		INode tmpNode = alc.visit_(node.getExpression());
+		forNode.addNode(tmpNode);
 		addToCursor(tmp, forNode);
 		tmp = forNode;
 		return false;
 	}
 
 	public boolean visit(DoStatement node) {
-		FNode forNode = new FNode("do", ASTNode.DO_STATEMENT);
+		INode forNode = new FNode("DO", ASTNode.DO_STATEMENT);
 		forNode.setInfo(node.toString());
 		ASTVisitor visitor = new ASTNodeMainVisitor(forNode);
 		node.getBody().accept(visitor);
-		FNode whileNode = new FNode(node.getExpression().toString(), ASTNode.WHILE_STATEMENT);
+		//FNode whileNode = new FNode(node.getExpression().toString(), ASTNode.WHILE_STATEMENT);
+		ASTLogicalExpressionChecker alc = new ASTLogicalExpressionChecker();
+		INode whileNode = alc.visit_(node.getExpression());
+		forNode.addNode(new FNode("",-1));
 		forNode.addNode(whileNode);
 		addToCursor(tmp, forNode);
-		tmp = whileNode;
+		tmp = forNode;
 		return false;
 	}
 

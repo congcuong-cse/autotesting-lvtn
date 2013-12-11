@@ -38,7 +38,7 @@ public interface INode {
 	public abstract boolean isFolded();
 	public abstract void setFolded(boolean folded);
 	
-	public abstract void setOperator(InfixExpression.Operator operator );
-	public abstract InfixExpression.Operator getOperator();
+	public abstract void setOperator(String operator );
+	public abstract String getOperator();
 
 }
