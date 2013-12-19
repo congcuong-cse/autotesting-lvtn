@@ -53,6 +53,7 @@ public class Controller implements IController {
 		this.targetPart = targetPart;
 	}
 
+
 	public static IController newInstance(ICompilationUnit compUnit, IMethod method, IWorkbenchPart targetPart) {
 		know = new Controller(compUnit, method, targetPart);
 		return know;
@@ -153,9 +154,9 @@ public class Controller implements IController {
 					System.err.println("No Document Found!");
 				}
 			} catch (NoCoverPathFoundException e) {
-				MessageDialog.openError(Controller.getInstance().getShell(), Statics.EDITOR_NAME, "No ./codecover path found!");
+				MessageDialog.openError(this.getInstance().getShell(), Statics.EDITOR_NAME, "No ./codecover path found!");
 			} catch (NoMethodFoundException e) {
-				MessageDialog.openError(Controller.getInstance().getShell(), Statics.EDITOR_NAME, method.getElementName()
+				MessageDialog.openError(this.getInstance().getShell(), Statics.EDITOR_NAME, method.getElementName()
 						+ " was not found in the session." + "\nCheck if you saved it after the execution.");
 			}
 			// Initialize object
@@ -211,9 +212,9 @@ public class Controller implements IController {
 					System.err.println("No Document Found!");
 				}
 			} catch (NoCoverPathFoundException e) {
-				MessageDialog.openError(Controller.getInstance().getShell(), Statics.EDITOR_NAME, "No ./codecover path found!");
+				MessageDialog.openError(this.getInstance().getShell(), Statics.EDITOR_NAME, "No ./codecover path found!");
 			} catch (NoMethodFoundException e) {
-				MessageDialog.openError(Controller.getInstance().getShell(), Statics.EDITOR_NAME, method.getElementName()
+				MessageDialog.openError(this.getInstance().getShell(), Statics.EDITOR_NAME, method.getElementName()
 						+ " was not found in the session." + "\nCheck if you saved it after the execution.");
 			}
 			// Initialize object
@@ -221,6 +222,7 @@ public class Controller implements IController {
 			ASTNode node = astParser.createAST(null);
 			node.accept(visitor);
 			// Write the node to disc.
+			//System.out.println(getFullPath(method));
 			new NodeSerializer(nodes, targetPart, getFullPath(method), method).doWrite();
 		} catch (JavaModelException e) {
 			e.printStackTrace();

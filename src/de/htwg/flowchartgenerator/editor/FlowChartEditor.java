@@ -58,14 +58,14 @@ public class FlowChartEditor extends EditorPart implements IAdaptable {
 		g = (Graph) graphicalViewer.getControl();
 		graphBuilder.createView(g, nodes);
 		//TODO		
-		System.out.println("Generator paths:");
-		
-		TestcaseGenerator tg = new TestcaseGenerator();
-		tg.breadthFirstTraversal(g);
-		for(ArrayList<TestcaseNode> i: tg.getTests()){
-			System.out.println(i);
-		}
-		System.out.println();
+//		System.out.println("Generator paths:");
+//		
+//		TestcaseGenerator tg = new TestcaseGenerator();
+//		tg.breadthFirstTraversal(g);
+//		for(ArrayList<TestcaseNode> i: tg.getTests()){
+//			System.out.println(i);
+//		}
+//		System.out.println();
 		
 		
 		outlineModel = new OutlineModel(g.getNodes().size(), g.getConnections().size());
@@ -78,7 +78,7 @@ public class FlowChartEditor extends EditorPart implements IAdaptable {
 		GraphViewContainer.setGf(graphicalViewer);
 		return g;
 	}
-
+	
 	@Override
 	public Object getAdapter(Class adapter) {
 		if (adapter == EditPartViewer.class) {

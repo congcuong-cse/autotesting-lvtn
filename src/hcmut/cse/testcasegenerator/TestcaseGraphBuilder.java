@@ -1,27 +1,21 @@
-package de.htwg.flowchartgenerator.editor;
+package hcmut.cse.testcasegenerator;
 
-import static de.htwg.flowchartgenerator.utils.Statics.GREEN_COLOR;
-import static de.htwg.flowchartgenerator.utils.Statics.H_COLOR;
 import static de.htwg.flowchartgenerator.utils.Statics.NODE_DEFAULT_TEXT;
 import static de.htwg.flowchartgenerator.utils.Statics.RED_COLOR;
 
 import java.util.List;
 
-import org.eclipse.draw2d.Label;
 import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.InfixExpression;
 import org.eclipse.swt.SWT;
-import org.eclipse.zest.core.widgets.Graph;
 import org.eclipse.zest.core.widgets.GraphConnection;
 import org.eclipse.zest.core.widgets.GraphNode;
 import org.eclipse.zest.core.widgets.ZestStyles;
 
-import de.htwg.flowchartgenerator.ast.model.FNode;
-import de.htwg.flowchartgenerator.ast.model.INode;
+import hcmut.cse.testcasegenerator.model.TestcaseGraph;
+import hcmut.cse.testcasegenerator.model.TestcaseGraphNode;
+import hcmut.cse.testcasegenerator.model.TestcaseGraphConnection;
 
-import org.eclipse.jdt.core.dom.InfixExpression;
-import org.eclipse.jdt.core.dom.ParenthesizedExpression;
-import org.eclipse.jdt.core.dom.PrefixExpression;
+import de.htwg.flowchartgenerator.ast.model.INode;
 
 /**
  * Contains the algorithm that connects the nodes with the corresponding ones.
@@ -29,10 +23,10 @@ import org.eclipse.jdt.core.dom.PrefixExpression;
  * @author Aldi Alimucaj
  * 
  */
-public class GraphBuilder implements IGraphBuilder {
-	private NodeAdmin nodeAdmin = NodeAdminFactory.getInstance();
-	private GraphNode nodeEnd; 
-	private GraphNode nodeTemp;
+public class TestcaseGraphBuilder{
+	private TestcaseNodeAdmin nodeAdmin = TestcaseNodeAdminFactory.getInstance();
+	private TestcaseGraphNode nodeEnd; 
+	private TestcaseGraphNode nodeTemp;
 
 	/**
 	 * This method generates a graph with the nodes from the model. Calls itself recursively and should never return null.
@@ -50,25 +44,24 @@ public class GraphBuilder implements IGraphBuilder {
 	 * 
 	 * @return GraphNode
 	 */
-	@Override
-	public GraphNode createView(Graph g, INode node, GraphNode linkNode, GraphNode loopNode, GraphNode switchNode, GraphNode parent) {
-		GraphNode newGraphNode = null;
+	public TestcaseGraphNode createView(TestcaseGraph g, INode node, TestcaseGraphNode linkNode, TestcaseGraphNode loopNode, TestcaseGraphNode switchNode, TestcaseGraphNode parent) {
+		TestcaseGraphNode newGraphNode = null;
 
 		if (node.getType() ==  ASTNode.SWITCH_CASE){
 			String value = node.getValue();
-			newGraphNode = new GraphNode(g, SWT.NONE, value);
+			newGraphNode = new TestcaseGraphNode(g, value);
 			if (node.getNodes().size() > 0) {
-				GraphNode nn = createView(g, node.getNodes().get(0), nodeTemp, loopNode, switchNode, newGraphNode);
+				TestcaseGraphNode nn = createView(g, node.getNodes().get(0), nodeTemp, loopNode, switchNode, newGraphNode);
 				
 				if (null != nn)
 					nodeTemp = nn;
-					new GraphConnection(g, ZestStyles.CONNECTIONS_DIRECTED, newGraphNode, nn);
+					new TestcaseGraphConnection(g, newGraphNode, nn);
 			}
 //			if (node.getNodes().size() == 0 && linkNode != null) {
 //				new GraphConnection(g, ZestStyles.CONNECTIONS_DIRECTED, newGraphNode, linkNode);
 //			}
 			if(node.getNodes().size()== 0){
-				new GraphConnection(g, ZestStyles.CONNECTIONS_DIRECTED, newGraphNode, nodeTemp);
+				new TestcaseGraphConnection(g, newGraphNode, nodeTemp);
 			}
 		}
 		
@@ -81,21 +74,20 @@ public class GraphBuilder implements IGraphBuilder {
 			if (node.getValue().length() <= NODE_DEFAULT_TEXT.length()) {
 				expression = node.getValue();
 			}
-			newGraphNode = new GraphNode(g, SWT.NONE, expression);
+			newGraphNode = new TestcaseGraphNode(g, expression);
 
 			if (expression.equals("START")) {
-				newGraphNode.setBackgroundColor(GREEN_COLOR);
 				nodeAdmin.setRoot(node);
-				nodeEnd =  new GraphNode(g, SWT.NONE, "END");
-				nodeEnd.setBackgroundColor(RED_COLOR);
+				newGraphNode.setType(0);
+				nodeEnd =  new TestcaseGraphNode(g, "END", 0);
 			}
 			if (node.getNodes().size() > 0) {
-				GraphNode nn = createView(g, node.getNodes().get(0), linkNode, loopNode, switchNode, newGraphNode);
+				TestcaseGraphNode nn = createView(g, node.getNodes().get(0), linkNode, loopNode, switchNode, newGraphNode);
 				if (null != nn)
-					new GraphConnection(g, ZestStyles.CONNECTIONS_DIRECTED, newGraphNode, nn);
+					new TestcaseGraphConnection(g, newGraphNode, nn);
 			}
 			if (node.getNodes().size() == 0 && linkNode != null) {
-				new GraphConnection(g, ZestStyles.CONNECTIONS_DIRECTED, newGraphNode, linkNode);
+				new TestcaseGraphConnection(g, newGraphNode, linkNode);
 			}
 		}
 		/************************************
@@ -107,10 +99,10 @@ public class GraphBuilder implements IGraphBuilder {
 			INode conditionNode = node.getNodes().get(node.getSize() -1);
 	
 			if (node.getNodes().size() -1 > 0) {
-				GraphNode yesGraphNode = null;
-				GraphNode noGraphNode = null;
+				TestcaseGraphNode yesGraphNode = null;
+				TestcaseGraphNode noGraphNode = null;
 				// The second or third node is the main stream.
-				GraphNode linkGraphNode = null;
+				TestcaseGraphNode linkGraphNode = null;
 				if (node.getNodes().size() -1 == 3) {
 					// this is the last one the main stream
 					INode tn = null;
@@ -171,29 +163,35 @@ public class GraphBuilder implements IGraphBuilder {
 		if (node.getType() == ASTNode.SWITCH_STATEMENT) {
 			//TODO
 			//newGraphNode = new GraphNode(g, SWT.NONE, node.getValue());
-			GraphNode newGraphNode_;
-			GraphNode tail = null;
+			TestcaseGraphNode newGraphNode_;
+			TestcaseGraphNode tail = null;
 			tail = createView(g, node.getNodes().get(1), linkNode, loopNode, switchNode, null);
 			if (tail == null) {
 				tail = linkNode;
 			}
 			nodeTemp = tail;
-			GraphNode lastButOne = null;
+			TestcaseGraphNode lastButOne = null;
 			if (node.getSize() > 2) {
 				INode tn_ = node.getNodes().get(node.getSize() - 1);
 				//INode tn = (node.getNodes().get(i).getSize() > 0) ? node.getNodes().get(i).getNodes().get(0) : node.getNodes().get(i);
 				newGraphNode_ = createView(g, tn_, (lastButOne == null) ? tail : lastButOne, tail, lastButOne, newGraphNode);
 				if(newGraphNode_.getText().contains("default :")){
 					newGraphNode_.setText("default :");
+					newGraphNode_.setType(0);
 				}
+				else
+					newGraphNode_.setType(2);
 				for (int i = node.getSize() - 2; i >= 2; i--) {
 					INode tn = node.getNodes().get(i);
 					//INode tn = (node.getNodes().get(i).getSize() > 0) ? node.getNodes().get(i).getNodes().get(0) : node.getNodes().get(i);
-					(new GraphConnection(g, ZestStyles.CONNECTIONS_DIRECTED, lastButOne = createView(g, tn, (lastButOne == null) ? tail : lastButOne, tail, lastButOne, newGraphNode), newGraphNode_ 
-						)).setLineColor(RED_COLOR);
+					lastButOne = createView(g, tn, (lastButOne == null) ? tail : lastButOne, tail, lastButOne, newGraphNode);
 					if(lastButOne.getText().contains("default :")){
+						lastButOne.setType(0);
 						lastButOne.setText("default :");
 					}
+					else
+						lastButOne.setType(2);
+					(new TestcaseGraphConnection(g,lastButOne , newGraphNode_ )).setLineColor(RED_COLOR);
 					newGraphNode_ = lastButOne;
 					if(i == 2){
 						newGraphNode = newGraphNode_;
@@ -205,24 +203,24 @@ public class GraphBuilder implements IGraphBuilder {
 		 * Handles the FOR and WHILE-Loops No difference in path consuming between the to loops.
 		 ************************************/
 		if (node.getType() == ASTNode.FOR_STATEMENT) {
-			GraphNode ForNode = new GraphNode(g, SWT.NONE, node.getValue());
+			TestcaseGraphNode ForNode = new TestcaseGraphNode(g, node.getValue(), 0);
 			List<INode> inits = node.getNodes().get(node.getNodes().size() -2).getNodes();
 			newGraphNode = ForNode;
 			for(int i = inits.size()-1; i>=0; i--){
-				GraphNode newGraphNode__ = new GraphNode(g, SWT.NONE, inits.get(i).getValue());
-				new GraphConnection(g, ZestStyles.CONNECTIONS_DIRECTED, newGraphNode__, newGraphNode);
+				TestcaseGraphNode newGraphNode__ = new TestcaseGraphNode(g, inits.get(i).getValue());
+				new TestcaseGraphConnection(g, newGraphNode__, newGraphNode);
 				newGraphNode= newGraphNode__;
 			}
 			List<INode> updates = node.getNodes().get(node.getNodes().size() -1).getNodes();
-			GraphNode head_tail = ForNode;
+			TestcaseGraphNode head_tail = ForNode;
 			for(int i = updates.size()-1; i>=0; i--){
-				GraphNode newGraphNode__ = new GraphNode(g, SWT.NONE, updates.get(i).getValue());
-				new GraphConnection(g, ZestStyles.CONNECTIONS_DIRECTED, newGraphNode__, head_tail);
+				TestcaseGraphNode newGraphNode__ = new TestcaseGraphNode(g, updates.get(i).getValue());
+				new TestcaseGraphConnection(g, newGraphNode__, head_tail);
 				head_tail = newGraphNode__;
 			}
 			if (node.getNodes().size() != 0) {
-				GraphNode head = null;
-				GraphNode tail = null;
+				TestcaseGraphNode head = null;
+				TestcaseGraphNode tail = null;
 				if (node.getNodes().size() - 3 == 2) {
 					tail = createView(g, node.getNodes().get(1), linkNode, loopNode, switchNode, null);
 				} else if (node.getNodes().size() -3 == 1) {
@@ -232,7 +230,7 @@ public class GraphBuilder implements IGraphBuilder {
 				head = createView(g, node.getNodes().get(0), head_tail, tail);
 				
 
-				new GraphConnection(g, ZestStyles.CONNECTIONS_DIRECTED, ForNode, createConditionView(g, node.getNodes().get(node.getNodes().size() -3), head, tail));
+				new TestcaseGraphConnection(g, ForNode, createConditionView(g, node.getNodes().get(node.getNodes().size() -3), head, tail));
 			}
 
 		}
@@ -240,19 +238,19 @@ public class GraphBuilder implements IGraphBuilder {
 		 * Handles the DO-WHILE-Loops
 		 ************************************/
 		if (node.getType() == ASTNode.DO_STATEMENT) {
-			newGraphNode = new GraphNode(g, SWT.NONE, node.getValue());
+			newGraphNode = new TestcaseGraphNode(g, node.getValue(), 0);
 			if (node.getNodes().size() == 3) {
-				GraphNode body = null;// the inner part
-				GraphNode tail = null;// the main stream
+				TestcaseGraphNode body = null;// the inner part
+				TestcaseGraphNode tail = null;// the main stream
 				
 				if (node.getNodes().get(1).getType() != -1) {
 					tail = createView(g, node.getNodes().get(1), linkNode, loopNode, switchNode, newGraphNode);
 				} else{
 					tail = linkNode;
 				}
-				GraphNode whil = createConditionView(g, node.getNodes().get(2), newGraphNode, tail);
+				TestcaseGraphNode whil = createConditionView(g, node.getNodes().get(2), newGraphNode, tail);
 				body = createView(g, node.getNodes().get(0), whil, loopNode, switchNode, newGraphNode);
-				new GraphConnection(g, ZestStyles.CONNECTIONS_DIRECTED, newGraphNode, body);
+				new TestcaseGraphConnection(g, newGraphNode, body);
 			}
 
 		}
@@ -262,7 +260,7 @@ public class GraphBuilder implements IGraphBuilder {
 		 ************************************/
 		if (node.getType() == ASTNode.CONTINUE_STATEMENT) {
 			if (null != linkNode && parent != linkNode && linkNode != switchNode) {
-				new GraphConnection(g, ZestStyles.CONNECTIONS_DIRECTED, parent, linkNode);
+				new TestcaseGraphConnection(g, parent, linkNode);
 			} else {
 				return null;
 			}
@@ -274,7 +272,7 @@ public class GraphBuilder implements IGraphBuilder {
 			// decides whether its a loop break or a switch break
 			newGraphNode = (loopNode == null) ? linkNode : loopNode;
 //			if (null != loopNode && linkNode != loopNode && linkNode != switchNode) {
-//				new GraphConnection(g, ZestStyles.CONNECTIONS_DIRECTED, linkNode, loopNode);
+//				new TestcaseGraphConnection(g, linkNode, loopNode);
 //			}
 		}
 		
@@ -282,9 +280,9 @@ public class GraphBuilder implements IGraphBuilder {
 		 * Handles the RETURN STATEMENTS
 		 ************************************/
 		if(node.getType() == ASTNode.RETURN_STATEMENT){
-			newGraphNode = new GraphNode(g, SWT.NONE, node.getValue());
+			newGraphNode = new TestcaseGraphNode(g, node.getValue());
 			if (null != newGraphNode) {
-				new GraphConnection(g, ZestStyles.CONNECTIONS_DIRECTED, newGraphNode, nodeEnd);
+				new TestcaseGraphConnection(g, newGraphNode, nodeEnd);
 			}
 		}
 		
@@ -297,35 +295,31 @@ public class GraphBuilder implements IGraphBuilder {
 			
 
 			if (node.getType() != 0 && node.getType() != ASTNode.RETURN_STATEMENT && null != newGraphNode) {
-				new GraphConnection(g, ZestStyles.CONNECTIONS_DIRECTED, newGraphNode, nodeEnd);
+				new TestcaseGraphConnection(g, newGraphNode, nodeEnd);
 			}
 			if (null == newGraphNode) {
 				newGraphNode = nodeEnd;
 			}
 			//endGraphNode.setBackgroundColor(RED_COLOR);
 		}
-		if (node.isCovered()) {
-			newGraphNode.setBackgroundColor(H_COLOR);
-		}
 		if (null != newGraphNode && node.getType() != ASTNode.BREAK_STATEMENT) {
-			newGraphNode.setTooltip(new Label(node.getInfo()));
-			nodeAdmin.add(new NodeContainer(node, newGraphNode));
+			nodeAdmin.add(new TestcaseNodeContainer(node, newGraphNode));
 		}
 		
 		return newGraphNode;
 	}
 
-	public GraphNode createConditionView(Graph g, INode nodes, GraphNode yes, GraphNode no){
+	public TestcaseGraphNode createConditionView(TestcaseGraph g, INode nodes, TestcaseGraphNode yes, TestcaseGraphNode no){
 		if(nodes.getOperator() != null
 				&& ( nodes.getOperator().contains( "&&") || nodes.getOperator().contains("&") )){
-			GraphNode rightGraphNode = createConditionView(g, nodes.getNodes().get(1), yes, no);
-			GraphNode leftGraphNode = createConditionView(g, nodes.getNodes().get(0), rightGraphNode, no);
+			TestcaseGraphNode rightGraphNode = createConditionView(g, nodes.getNodes().get(1), yes, no);
+			TestcaseGraphNode leftGraphNode = createConditionView(g, nodes.getNodes().get(0), rightGraphNode, no);
 			return leftGraphNode;
 		}
 		else if(nodes.getOperator() != null
 				&& ( nodes.getOperator().contains("||") || nodes.getOperator().contains("|") )){
-			GraphNode rightGraphNode = createConditionView(g, nodes.getNodes().get(1), yes, no);
-			GraphNode leftGraphNode = createConditionView(g, nodes.getNodes().get(0), yes, rightGraphNode);
+			TestcaseGraphNode rightGraphNode = createConditionView(g, nodes.getNodes().get(1), yes, no);
+			TestcaseGraphNode leftGraphNode = createConditionView(g, nodes.getNodes().get(0), yes, rightGraphNode);
 			return leftGraphNode;
 		}
 		else if(nodes.getOperator() != null
@@ -333,30 +327,27 @@ public class GraphBuilder implements IGraphBuilder {
 			return createConditionView(g, nodes.getNodes().get(0), no, yes);
 		}
 		else{		
-			GraphNode newGraphNode = new GraphNode(g, SWT.NONE, nodes.getValue());
+			TestcaseGraphNode newGraphNode = new TestcaseGraphNode(g, nodes.getValue(),2);
 			//System.out.println(newGraphNode.toString());
 			if( yes != null){
-				new GraphConnection(g, ZestStyles.CONNECTIONS_DIRECTED, newGraphNode, yes);
+				new TestcaseGraphConnection(g, newGraphNode, yes);
 			}
 			if( no != null){
-				(new GraphConnection(g, ZestStyles.CONNECTIONS_DIRECTED, newGraphNode, no)).setLineColor(RED_COLOR);
+				(new TestcaseGraphConnection(g, newGraphNode, no)).setLineColor(RED_COLOR);
 			}
 			return newGraphNode;
 		}
 	}
 	
-	@Override
-	public GraphNode createView(Graph g, INode nodes, GraphNode linkNode) {
+	public TestcaseGraphNode createView(TestcaseGraph g, INode nodes, TestcaseGraphNode linkNode) {
 		return createView(g, nodes, linkNode, null);
 	}
 
-	@Override
-	public GraphNode createView(Graph g, INode nodes) {
+	public TestcaseGraphNode createView(TestcaseGraph g, INode nodes) {
 		return createView(g, nodes, null);
 	}
 
-	@Override
-	public GraphNode createView(Graph g, INode node, GraphNode linkNode, GraphNode loopNode) {
+	public TestcaseGraphNode createView(TestcaseGraph g, INode node, TestcaseGraphNode linkNode, TestcaseGraphNode loopNode) {
 		return createView(g, node, linkNode, loopNode, null, null);
 	}
 	

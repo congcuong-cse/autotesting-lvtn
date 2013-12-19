@@ -1,4 +1,4 @@
-package de.htwg.flowchartgenerator.controller;
+package hcmut.cse.testcasegenerator.controller;
 
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IMethod;
@@ -10,10 +10,8 @@ import org.eclipse.ui.IWorkbenchPart;
  * @author Aldi Alimucaj
  *
  */
-public interface IController {
+public interface ITestcaseController {
 	public void operate();
-	public void operateFromTest();
-	public void operateFromChosenTest();
 	public void setPosition(int pos);
 	public int getPosition();
 	public ICompilationUnit getCompUnit();

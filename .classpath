@@ -23,5 +23,6 @@
 	<classpathentry kind="lib" path="org.eclipse.zest.core_1.1.0.v20090504-1850.jar"/>
 	<classpathentry kind="lib" path="org.eclipse.zest.layouts_0.7.0.MJ.jar"/>
 	<classpathentry kind="lib" path="org.osgi.core-4.3.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="bsh-2.0b4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

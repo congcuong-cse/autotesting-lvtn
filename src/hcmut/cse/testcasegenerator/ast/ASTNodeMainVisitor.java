@@ -1,4 +1,4 @@
-package de.htwg.flowchartgenerator.ast;
+package hcmut.cse.testcasegenerator.ast;
 
 import java.util.Iterator;
 import java.util.List;
@@ -27,7 +27,10 @@ import org.eclipse.ui.IWorkbenchPart;
 import de.htwg.flowchartgenerator.ast.model.FNode;
 import de.htwg.flowchartgenerator.ast.model.INode;
 import de.htwg.flowchartgenerator.ast.model.LNode;
-import de.htwg.flowchartgenerator.controller.Controller;
+import hcmut.cse.testcasegenerator.ast.ASTMethodChecker;
+import hcmut.cse.testcasegenerator.controller.TestcaseController;
+import de.htwg.flowchartgenerator.ast.ASTExpressionChecker;
+import de.htwg.flowchartgenerator.ast.ASTLogicalExpressionChecker;
 
 /**
  * 
@@ -37,11 +40,11 @@ import de.htwg.flowchartgenerator.controller.Controller;
  * 
  */
 public class ASTNodeMainVisitor extends ASTVisitor {
-	public INode tmp;
+	INode tmp;
 	INode switchCase;
 	INode switchSt;
 	IWorkbenchPart wb;
-	int startPosition = Controller.getInstance().getPosition();
+	int startPosition = TestcaseController.getInstance().getPosition();
 
 	public ASTNodeMainVisitor(INode nodes) {
 		tmp = nodes;
@@ -239,7 +242,7 @@ public class ASTNodeMainVisitor extends ASTVisitor {
 			Statement tNode = (Statement) iterator.next();
 			if (tNode instanceof SwitchCase) {
 				if(((SwitchCase) tNode).getExpression() != null){
-					//System.out.println(((SwitchCase) tNode).getExpression().toString());
+					System.out.println(((SwitchCase) tNode).getExpression().toString());
 					tCase = new FNode(node.getExpression().toString() +"==" + ((SwitchCase) tNode).getExpression().toString(), ASTNode.SWITCH_CASE);
 				}
 				else{

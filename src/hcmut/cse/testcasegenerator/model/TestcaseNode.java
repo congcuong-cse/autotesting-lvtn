@@ -1,45 +1,34 @@
 package hcmut.cse.testcasegenerator.model;
 import java.util.*;
 
-import org.eclipse.zest.core.viewers.GraphViewer;
-import org.eclipse.zest.core.widgets.Graph;
-import org.eclipse.zest.core.widgets.GraphNode;
-import org.eclipse.zest.core.widgets.GraphConnection;
-import org.eclipse.zest.core.widgets.ZestStyles;
-import org.eclipse.zest.layouts.LayoutStyles;
 
 public class TestcaseNode {
-	private GraphNode node ;
+	private TestcaseGraphNode node ;
 	private ArrayList<TestcaseNode> before = new ArrayList<TestcaseNode>();
 	
 	
-	public TestcaseNode(GraphNode node, ArrayList<TestcaseNode> before){
-		this.node = node;
-		ArrayList<TestcaseNode> result = new ArrayList<TestcaseNode>();
-		if(before != null){
-			for(TestcaseNode i : before){
-				result.add(i);
-			}
-		}
-		this.before = result;
+	public TestcaseNode(TestcaseGraphNode node, ArrayList<TestcaseNode> before){
+		this.node = new TestcaseGraphNode(node);
+		this.before = before;
 	}
 	
+	
 	public TestcaseNode(TestcaseNode n){
-		this.node = n.getNode();
+		this.node = new TestcaseGraphNode( n.getNode());
 		ArrayList<TestcaseNode> result = new ArrayList<TestcaseNode>();
 		if(n.getBefore() != null){
 			for(TestcaseNode i : n.getBefore()){
-				result.add(i);
+				result.add(new TestcaseNode(i));
 			}
 		}
 		this.before = result;
 	}
 	
-	public void setNode(GraphNode node){
+	public void setNode(TestcaseGraphNode node){
 		this.node = node;
 	}
 	
-	public GraphNode getNode(){
+	public TestcaseGraphNode getNode(){
 		return this.node;
 	}
 	
@@ -47,7 +36,7 @@ public class TestcaseNode {
 		ArrayList<TestcaseNode> result = new ArrayList<TestcaseNode>();
 		if(before != null){
 			for(TestcaseNode i : before){
-				result.add(i);
+				result.add(new TestcaseNode(i));
 			}
 		}
 		this.before = result;
@@ -65,7 +54,7 @@ public class TestcaseNode {
 	
 	@Override
 	public String toString(){
-		return this.node.getText();
+		 return this.node.getType() + ":" + this.node.getText() ;
 	}
 
 	
