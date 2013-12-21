@@ -241,53 +241,53 @@ public class TestcaseController implements ITestcaseController {
 									System.out.println(te.getTarget().toString());
 									err = te.getTarget().toString();
 									errClass = te.getTarget().getClass().getName();
-								}
-								else{
-									t.printStackTrace();
-									System.out.println(t);
-									err = t.toString();
-									errClass = t.getClass().getName();
-								}
-								ps.println("");
-								ps.println("\t/**");
-								ps.println("\t * Test Number " + counttest);
-								ps.println("\t * Path: "+i);
-								ps.println("\t * Result: error: "+err); 
-								ps.println("\t * @throws Exception"); 
-								ps.println("\t */");
-								ps.println("\t@Test");
-								ps.println("\tpublic void " + "test" + counttest + "() {");
-								
-								ps.println("\t\ttry{");
-								
-								
-								
-								String inputs = "";
-								for(int m = 0; m<listPara.size();m++){
-									TestcaseParameter it = listPara.get(m);
-									if(m ==0){
-										inputs += "input"+ (m+1);
+									ps.println("");
+									ps.println("\t/**");
+									ps.println("\t * Test Number " + counttest);
+									ps.println("\t * Path: "+i);
+									ps.println("\t * Result: error: "+err); 
+									ps.println("\t * @throws Exception"); 
+									ps.println("\t */");
+									ps.println("\t@Test");
+									ps.println("\tpublic void " + "test" + counttest + "() {");
+									
+									ps.println("\t\ttry{");
+									
+									
+									
+									String inputs = "";
+									for(int m = 0; m<listPara.size();m++){
+										TestcaseParameter it = listPara.get(m);
+										if(m ==0){
+											inputs += "input"+ (m+1);
+										}
+										else{
+											inputs += ", input" + (m+1);
+										}
+										ps.println("\t\t\t"+ Signature.toString(it.getVar().getTypeSignature()) + " input" + (m+1) + " = " + it.getValue() + ";");
+									}
+									//not void
+									if(!Signature.toString(method.getReturnType()).equals("void")){
+										ps.println("\t\t\t"+ Signature.toString(method.getReturnType()) +" output = myClass."+ method.getElementName()+ "(" + inputs + ");");
 									}
 									else{
-										inputs += ", input" + (m+1);
+										ps.println("\t\t\t\tmyClass."+ method.getElementName()+ "(" + inputs + ");");
 									}
-									ps.println("\t\t\t"+ Signature.toString(it.getVar().getTypeSignature()) + " input" + (m+1) + " = " + it.getValue() + ";");
-								}
-								//not void
-								if(!Signature.toString(method.getReturnType()).equals("void")){
-									ps.println("\t\t\t"+ Signature.toString(method.getReturnType()) +" output = myClass."+ method.getElementName()+ "(" + inputs + ");");
+									
+									ps.println("\t\t}");
+									ps.println("\t\tcatch(Exception e){");
+									ps.println("\t\t\tassertEquals(\"exception\", \""+errClass+"\", e.getClass().getName());");
+									ps.println("\t\t\treturn;");
+									ps.println("\t\t}");
+									ps.println("\t\tfail(\"Did not find expected exception\");");
+									break;
 								}
 								else{
-									ps.println("\t\t\t\tmyClass."+ method.getElementName()+ "(" + inputs + ");");
+									System.out.println(t);
+//									err = t.toString();
+//									errClass = t.getClass().getName();
 								}
 								
-								ps.println("\t\t}");
-								ps.println("\t\tcatch(Exception e){");
-								ps.println("\t\t\tassertEquals(\"exception\", \""+errClass+"\", e.getClass().getName());");
-								ps.println("\t\t\treturn;");
-								ps.println("\t\t}");
-								ps.println("\t\tfail(\"Did not find expected exception\");");
-								break;
 								
 							}
 							if(gonext == 0){
