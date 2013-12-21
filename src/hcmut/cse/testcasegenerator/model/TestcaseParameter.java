@@ -59,13 +59,13 @@ public class TestcaseParameter {
 		int index = 0;
 		for(int i = 0; i< list.size(); i++){
 			if(list.get(i).value  == list.get(i).getMax()){
-				index = i;
+				index = i+1;
 			}
 			else
 				break;
 		}
-		list.get(index+1).setValue(list.get(index+1).getValue()+1);
-		for(int j = 0; j<= index; j++){
+		list.get(index).setValue(list.get(index).getValue()+1);
+		for(int j = 0; j< index; j++){
 			list.get(j).setValue(list.get(j).getMin());
 		}
 	}

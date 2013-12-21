@@ -30,12 +30,15 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IDE;
+import org.eclipse.jdt.core.Signature;
 
 import bsh.EvalError;
 import bsh.Interpreter;
+import bsh.util.BshCanvas;
 import de.htwg.flowchartgenerator.ast.model.FNode;
 import de.htwg.flowchartgenerator.ast.model.INode;
 import de.htwg.flowchartgenerator.utils.BundleChecker;
+
 
 /**
  * Controller
@@ -102,7 +105,7 @@ public class TestcaseController implements ITestcaseController {
 			System.out.println("Generator testcase paths:");
 			TestcaseGraphBuilder graphBuilder = new TestcaseGraphBuilder();
 			TestcaseGraph g = new TestcaseGraph();
-			graphBuilder.createView(g, nodes);
+			graphBuilder.createView(g, nodes, 1);
 			TestcaseGenerator tg = new TestcaseGenerator();
 			tg.breadthFirstTraversal(g);
 			for(ArrayList<TestcaseNode> i: tg.getTests()){
@@ -112,7 +115,7 @@ public class TestcaseController implements ITestcaseController {
 			
 			String path = method.getResource().getParent().getLocation().toOSString();
 			String classname = method.getParent().getElementName() + "_" + method.getElementName()
-					+ method.getSignature().replace("(","_").replace(")","_") + "_Test";
+					+ method.getSignature().replace("(","_").replace(")","_").replace("[", "_") + "_Test";
 			path += "\\" + classname +".java";
 			System.out.println(path);
 			
@@ -166,66 +169,186 @@ public class TestcaseController implements ITestcaseController {
 				for(IPackageDeclaration i: pd){
 					pack += i.getElementName();
 				}
+				ps.println("/**");
+				ps.println(" * This is an automatic Junit TestCase generated");
+				ps.println(" * by ATG.");
+				ps.println(" */");
 				ps.println("package " + pack + ";");
 				ps.println("import org.junit.Test;");
+				ps.println("import static org.junit.Assert.*;");
 				ps.println("import org.junit.Before;");
 				ps.println("import org.junit.After;");
+				ps.println("");
+				ps.println("/*");
+				ps.println(" * @author ATG");
+				ps.println(" */");
 				ps.println("public class " + classname + "{" );
+				ps.println("");
 				ps.println("\t" + method.getParent().getElementName() +" myClass;");
-
+				ps.println("");
 			    ps.println("\t@Before");
 			    ps.println("\tpublic void initialize() {");
 			    ps.println("\t\t myClass = new " + method.getParent().getElementName() + "();");
 			    ps.println("\t}");
+			    ps.println("");
 			    ps.println("\t@After");
 			    ps.println("\tpublic void clean() {");
 			    ps.println("\t\t myClass = null;");
 			    ps.println("\t}");
 				int counttest = 1;
 				for(ArrayList<TestcaseNode> i: tg.getTests()){
-					ps.println("\t@Test");
-					ps.println("\tpublic void " + "test" + counttest + "() {");
-					ps.println("\t\t//"+i);
+					
 					if(generatorInput){
-						TestcaseParameter.beginLoop(listPara);
+						TestcaseParameter.beginLoop(listPara);	
 						while(true){
+							String outputExpected ="";
 							int gonext = 0;
 							try {
-								Interpreter in = new Interpreter();
 								
+								Interpreter in = new Interpreter();
 								for(TestcaseParameter t: listPara){
-									System.out.println("set("+ t.getVar().getElementName()+"," + t.getValue() + ")");
+									//System.out.println("set("+ t.getVar().getElementName()+"," + t.getValue() + ")");
 									in.set(t.getVar().getElementName(),t.getValue());
 								}
 								for(TestcaseNode e: i){
 									
 									if(e.getNode().getType()==1){
-										System.out.println("eval(" +e.getNode().getText() + ")");
+										//System.out.println("eval(" +e.getNode().getText() + ")");
 										in.eval(e.getNode().getText());
 									}
 									else if(e.getNode().getType()==2){
-										System.out.println("eval(_con = " +e.getNode().getText() + ")");
+										//System.out.println("eval(_con = " +e.getNode().getText() + ")");
 										in.eval("_con = " + e.getNode().getText());
 										if( (Boolean) in.get("_con") == false){
 											gonext =1;
 											break;
 										}
 									}
+									
+									else if(e.getNode().getType()==3){
+										//System.out.println("eval("+  e.getNode().getText().replaceFirst("return","return _result =") + ")");
+										in.eval(e.getNode().getText().replaceFirst("return","return _result ="));
+										outputExpected = in.get("_result").toString();
+									}
 
 								}
-							} catch (EvalError e) {
+							} catch (Throwable t) {
 								// TODO Auto-generated catch block
-							}
-							if(gonext == 0){
-								String inputs = "" + listPara.get(0).getValue();
-								for(int k = 1; k<listPara.size();k++){
-									inputs += "," +listPara.get(k).getValue();
+								String err="";
+								String errClass="";
+								if( t instanceof bsh.TargetError){
+									bsh.TargetError te = (bsh.TargetError) t;
+									System.out.println(te.getTarget().toString());
+									err = te.getTarget().toString();
+									errClass = te.getTarget().getClass().getName();
+								}
+								else{
+									t.printStackTrace();
+									System.out.println(t);
+									err = t.toString();
+									errClass = t.getClass().getName();
+								}
+								ps.println("");
+								ps.println("\t/**");
+								ps.println("\t * Test Number " + counttest);
+								ps.println("\t * Path: "+i);
+								ps.println("\t * Result: error: "+err); 
+								ps.println("\t * @throws Exception"); 
+								ps.println("\t */");
+								ps.println("\t@Test");
+								ps.println("\tpublic void " + "test" + counttest + "() {");
+								
+								ps.println("\t\ttry{");
+								
+								
+								
+								String inputs = "";
+								for(int m = 0; m<listPara.size();m++){
+									TestcaseParameter it = listPara.get(m);
+									if(m ==0){
+										inputs += "input"+ (m+1);
+									}
+									else{
+										inputs += ", input" + (m+1);
+									}
+									ps.println("\t\t\t"+ Signature.toString(it.getVar().getTypeSignature()) + " input" + (m+1) + " = " + it.getValue() + ";");
+								}
+								//not void
+								if(!Signature.toString(method.getReturnType()).equals("void")){
+									ps.println("\t\t\t"+ Signature.toString(method.getReturnType()) +" output = myClass."+ method.getElementName()+ "(" + inputs + ");");
+								}
+								else{
+									ps.println("\t\t\t\tmyClass."+ method.getElementName()+ "(" + inputs + ");");
 								}
 								
-								ps.println("\t\t//myClass."+ method.getElementName()+ "(" + inputs + ");");
+								ps.println("\t\t}");
+								ps.println("\t\tcatch(Exception e){");
+								ps.println("\t\t\tassertEquals(\"exception\", \""+errClass+"\", e.getClass().getName());");
+								ps.println("\t\t\treturn;");
+								ps.println("\t\t}");
+								ps.println("\t\tfail(\"Did not find expected exception\");");
+								break;
+								
+							}
+							if(gonext == 0){
+								ps.println("");
+								ps.println("\t/**");
+								ps.println("\t * Test Number " + counttest);
+								ps.println("\t * Path: "+i);
+								ps.println("\t * Result: Ok"); 
+								ps.println("\t * @throws Exception"); 
+								ps.println("\t */");
+								ps.println("\t@Test");
+								ps.println("\tpublic void " + "test" + counttest + "() {");
+								
+								
+								String inputs = "";
+								for(int m = 0; m<listPara.size();m++){
+									TestcaseParameter it = listPara.get(m);
+									if(m ==0){
+										inputs += "input"+ (m+1);
+									}
+									else{
+										inputs += ", input" + (m+1);
+									}
+									ps.println("\t\t"+ Signature.toString(it.getVar().getTypeSignature()) + " input" + (m+1) + " = " + it.getValue() + ";");
+								}
+								//not void
+								if(!Signature.toString(method.getReturnType()).equals("void")){
+									ps.println("\t\t"+ Signature.toString(method.getReturnType()) +" output = myClass."+ method.getElementName()+ "(" + inputs + ");");
+									ps.println("\t\t"+ Signature.toString(method.getReturnType()) +" outputExpected = " + outputExpected +";");
+									ps.println("\t\t//compare results");
+									ps.println("\t\tassertEquals(\"The result expected\",outputExpected,output);");
+								}
+								else{
+									ps.println("\t\tmyClass."+ method.getElementName()+ "(" + inputs + ");");
+								}
+								break;
 							}
 							if(TestcaseParameter.endLoop(listPara)){
-								ps.println("\t\t//myClass."+ method.getElementName()+ "(" /*TODO*/ + ");");
+								ps.println("");
+								ps.println("\t/**");
+								ps.println("\t * Test Number " + counttest);
+								ps.println("\t * Path: "+i);
+								ps.println("\t * Result: Cannot generate inputs!"); 
+								ps.println("\t * @throws Exception"); 
+								ps.println("\t */");
+								ps.println("\t@Test");
+								ps.println("\tpublic void " + "test" + counttest + "() {");;
+								
+								String inputs = "";
+								for(int m = 0; m<listPara.size();m++){
+									TestcaseParameter it = listPara.get(m);
+									if(m ==0){
+										inputs += "input"+ (m+1);
+									}
+									else{
+										inputs += ", input" + (m+1);
+									}
+									ps.println("\t\t"+ Signature.toString(it.getVar().getTypeSignature()) + " input" + (m+1) + ";//TODO");
+								}
+								ps.println("\t\tfail(\"Cannot generate inputs!\");");
+								ps.println("\t\t//myClass."+ method.getElementName()+ "(" + inputs + ");");
 								break;
 							}
 							else{
@@ -234,7 +357,29 @@ public class TestcaseController implements ITestcaseController {
 						}
 					}
 					else{
-						ps.println("\t\t//myClass."+ method.getElementName()+ "(" /*TODO*/ + ");");
+						ps.println("");
+						ps.println("\t/**");
+						ps.println("\t * Test Number " + counttest);
+						ps.println("\t * Path: "+i);
+						ps.println("\t * Result: Cannot generate inputs!"); 
+						ps.println("\t * @throws Exception"); 
+						ps.println("\t */");
+						ps.println("\t@Test");
+						ps.println("\tpublic void " + "test" + counttest + "() {");
+						
+						String inputs = "";
+						for(int m = 0; m<listPara.size();m++){
+							TestcaseParameter it = listPara.get(m);
+							if(m ==0){
+								inputs += "input"+ (m+1);
+							}
+							else{
+								inputs += ", input" + (m+1);
+							}
+							ps.println("\t\t"+ Signature.toString(it.getVar().getTypeSignature()) + " input" + (m+1) + ";//TODO");
+						}
+						ps.println("\t\tfail(\"Cannot generate inputs!\");");
+						ps.println("\t\t//myClass."+ method.getElementName()+ "(" + inputs + ");");
 					}
 					ps.println("\t}");
 					counttest++;

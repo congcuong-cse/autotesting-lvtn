@@ -20,9 +20,9 @@ public class TestcaseGraphTest {
 		// TODO Auto-generated method stub
 		
 		TestcaseGraph graph = new TestcaseGraph();
-		TestcaseGraphNode root = new TestcaseGraphNode(graph, "root");
-		TestcaseGraphNode left = new TestcaseGraphNode(graph, "left");
-		TestcaseGraphNode right = new TestcaseGraphNode(graph, "right");
+		TestcaseGraphNode root = new TestcaseGraphNode(graph, "root", 1);
+		TestcaseGraphNode left = new TestcaseGraphNode(graph, "left", 1);
+		TestcaseGraphNode right = new TestcaseGraphNode(graph, "right", 1);
 		new TestcaseGraphConnection(graph, root, left);
 		(new TestcaseGraphConnection(graph, root, right)).setLineColor(RED_COLOR);
 		System.out.println(graph);

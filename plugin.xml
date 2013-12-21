@@ -30,7 +30,7 @@
                enablesFor="1"
                icon="icons/plugin-icon16.png"
                id="PluginATG.newAction"
-               label="Build"
+               label="Build Control Flow Graph"
                menubarPath="PluginATG.menu1/group1">
          </action>
          <action
@@ -38,7 +38,7 @@
                enablesFor="1"
                icon="icons/calendar.png"
                id="PluginATG.newAction1"
-               label="Generator testcase"
+               label="Generate testcase"
                menubarPath="PluginATG.menu1/group1">
          </action>
       </objectContribution>

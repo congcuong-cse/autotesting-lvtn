@@ -7,19 +7,22 @@ public class TestcaseGraphNode {
 	private String text;
 	private String info;
 	private int type = 1;
+	private int deep = 1;
 	private ArrayList<TestcaseGraphConnection> sourceConnections = new ArrayList<TestcaseGraphConnection>();
 	private ArrayList<TestcaseGraphConnection> targetConnections = new ArrayList<TestcaseGraphConnection>();
 	
-	public TestcaseGraphNode(TestcaseGraph g, String t){
+	public TestcaseGraphNode(TestcaseGraph g, String t, int deep){
 		this.id = g.increateNodeCount();
 		this.text = t;
+		this.deep = deep;
 		g.addNode(this);	
 	}
 	
-	public TestcaseGraphNode(TestcaseGraph g, String t, int type){
+	public TestcaseGraphNode(TestcaseGraph g, String t, int type, int deep){
 		this.id = g.increateNodeCount();
 		this.text = t;
 		this.type = type;
+		this.deep = deep; 
 		g.addNode(this);	
 	}
 	
@@ -28,6 +31,7 @@ public class TestcaseGraphNode {
 		this.text = n.getText();
 		this.info = n.getInfo();
 		this.type = n.getType();
+		this.deep = n.getDeep();
 		this.sourceConnections = n.getSourceConnections();
 		this.targetConnections = n.getTargetConnections();
 	}
@@ -60,6 +64,14 @@ public class TestcaseGraphNode {
 	
 	public int getType(){
 		return this.type;
+	}
+	
+	public void setDeep(int deep){
+		this.deep = deep;
+	}
+	
+	public int getDeep(){
+		return this.deep;
 	}
 	
 	public ArrayList<TestcaseGraphConnection> getSourceConnections(){

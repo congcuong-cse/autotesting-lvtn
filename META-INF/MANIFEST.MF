@@ -17,3 +17,6 @@ Require-Bundle: org.eclipse.ui,
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: org.eclipse.ui.views.contentoutline
+Bundle-ClassPath: bsh-2.0b4.jar,
+ .,
+ dom4j-1.6.1.jar
