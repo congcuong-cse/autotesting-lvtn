@@ -78,9 +78,7 @@ public class GraphBuilder implements IGraphBuilder {
 		if (node.getType() == ASTNode.EXPRESSION_STATEMENT) {
 			
 			String expression = NODE_DEFAULT_TEXT;
-			if (node.getValue().length() <= NODE_DEFAULT_TEXT.length()) {
-				expression = node.getValue();
-			}
+			expression = node.getValue();
 			newGraphNode = new GraphNode(g, SWT.NONE, expression);
 
 			if (expression.equals("START")) {
@@ -128,7 +126,7 @@ public class GraphBuilder implements IGraphBuilder {
 					if (node.getNodes().get(1).getType() < 0) {
 						noGraphNode = createView(g, node.getNodes().get(1), linkNode, loopNode, switchNode, newGraphNode);
 					} else {
-						linkGraphNode = createView(g, node.getNodes().get(1), linkGraphNode, loopNode, switchNode,newGraphNode);
+						linkGraphNode = createView(g, node.getNodes().get(1), linkNode, loopNode, switchNode,newGraphNode);
 						noGraphNode = linkGraphNode;
 					}
 
@@ -201,8 +199,45 @@ public class GraphBuilder implements IGraphBuilder {
 				}
 			}
 		}
+		
 		/************************************
-		 * Handles the FOR and WHILE-Loops No difference in path consuming between the to loops.
+		 * Handles the try-catch-finally statements.
+		 ************************************/
+		if (node.getType() == ASTNode.TRY_STATEMENT) {
+			newGraphNode = new GraphNode(g, SWT.NONE, node.getValue());
+			GraphNode tail = null;
+			GraphNode newTail = null;
+			if (node.getNodes().size() != 0) {
+				tail = createView(g, node.getNodes().get(1), linkNode, loopNode, switchNode, newGraphNode);
+				if (tail == null) {
+					tail = linkNode;
+				}
+				if (node.getSize() > 2) {
+					for (int i = node.getSize() - 1; i >= 0; i--) {
+						if (i == 1) {
+							continue;
+						}
+						if (node.getNodes().get(i).getType() == ASTNode.CATCH_CLAUSE) {
+							newTail = createView(g, node.getNodes().get(i).getNodes().get(0), tail, loopNode, switchNode, newGraphNode);
+							tail = newTail;
+							continue;
+						}
+						if(i != 0){
+							new GraphConnection(g, ZestStyles.CONNECTIONS_DIRECTED, newGraphNode, createView(g, node.getNodes().get(i), tail, loopNode,
+								switchNode, newGraphNode)).setLineColor(RED_COLOR);
+						}
+						else{
+							new GraphConnection(g, ZestStyles.CONNECTIONS_DIRECTED, newGraphNode, createView(g, node.getNodes().get(i), tail, loopNode,
+									switchNode, newGraphNode));
+						}
+					}
+				}
+			}
+
+		}
+		
+		/************************************
+		 * Handles the FOR-Loops
 		 ************************************/
 		if (node.getType() == ASTNode.FOR_STATEMENT) {
 			GraphNode ForNode = new GraphNode(g, SWT.NONE, node.getValue());
@@ -223,9 +258,10 @@ public class GraphBuilder implements IGraphBuilder {
 			if (node.getNodes().size() != 0) {
 				GraphNode head = null;
 				GraphNode tail = null;
-				if (node.getNodes().size() - 3 == 2) {
+				if (node.getNodes().get(1).getType() != -1) {
 					tail = createView(g, node.getNodes().get(1), linkNode, loopNode, switchNode, null);
-				} else if (node.getNodes().size() -3 == 1) {
+				} 
+				else {
 					tail = linkNode;
 				}
 				
@@ -233,6 +269,29 @@ public class GraphBuilder implements IGraphBuilder {
 				
 
 				new GraphConnection(g, ZestStyles.CONNECTIONS_DIRECTED, ForNode, createConditionView(g, node.getNodes().get(node.getNodes().size() -3), head, tail));
+			}
+
+		}
+		
+		/************************************
+		 * Handles the While-Loops
+		 ************************************/
+		if (node.getType() == ASTNode.WHILE_STATEMENT) {
+			newGraphNode = new GraphNode(g, SWT.NONE, node.getValue());
+			if (node.getNodes().size() != 0) {
+				GraphNode head = null;
+				GraphNode tail = null;
+				if (node.getNodes().get(1).getType() != -1) {
+					tail = createView(g, node.getNodes().get(1), linkNode, loopNode, switchNode, null);
+				} 
+				else {
+					tail = linkNode;
+				}
+				
+				head = createView(g, node.getNodes().get(0), newGraphNode, tail);
+				
+
+				new GraphConnection(g, ZestStyles.CONNECTIONS_DIRECTED, newGraphNode, createConditionView(g, node.getNodes().get(node.getNodes().size() -1), head, tail));
 			}
 
 		}

@@ -33,7 +33,7 @@ import de.htwg.flowchartgenerator.controller.Controller;
  * 
  * Fills the root node with child nodes. Methods are called automatically from the visitor.
  * 
- * @author Aldi Alimucaj
+ * @author Pham Cong Cuong
  * 
  */
 public class ASTNodeMainVisitor extends ASTVisitor {
@@ -197,7 +197,7 @@ public class ASTNodeMainVisitor extends ASTVisitor {
 	}
 
 	public boolean visit(WhileStatement node) {
-		FNode forNode = new FNode("WHILE", ASTNode.FOR_STATEMENT);
+		FNode forNode = new FNode("WHILE", ASTNode.WHILE_STATEMENT);
 		forNode.setInfo(node.toString());
 		ASTVisitor visitor = new ASTNodeMainVisitor(forNode);
 		node.getBody().accept(visitor);

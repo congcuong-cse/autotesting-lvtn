@@ -14,7 +14,6 @@ public class TestcaseGenerator {
 
 	public ArrayList<TestcaseNode> getTruePath(TestcaseGraph g, TestcaseNode startNode, TestcaseNode endNode){
 		ArrayList<TestcaseNode> result =  new ArrayList<TestcaseNode>();
-		result.add(new TestcaseNode(startNode));
 		
 		Stack<TestcaseNode> stack = new Stack<TestcaseNode>();
 		stack.push(startNode);
@@ -22,6 +21,7 @@ public class TestcaseGenerator {
 		while(!stack.empty()){
 			TestcaseNode n = stack.pop();
 			if(endNode.equals(n)){
+				result.add(n);
 				return result;
 			}
 			else{
@@ -37,27 +37,43 @@ public class TestcaseGenerator {
 				TestcaseNode newTestcaseNode = null; 
 				if(gn.size() == 1){
 					newTestcaseNode = new TestcaseNode(gn.get(0).getDestination(), newBefore);
+					if(gn.get(0).getLineColor() == RED_COLOR){
+						new_n.getNode().setText("!(" +new_n.getNode().getText()+")");
+					}
 					stack.push(newTestcaseNode);
-					result.add(newTestcaseNode);
+					result.add(new_n);
 				}
 				else if(gn.size() == 2){
-					if(gn.get(0).getLineColor() == RED_COLOR){
-						newTestcaseNode = new TestcaseNode(gn.get(1).getDestination(), newBefore);
-						if(result.contains(newTestcaseNode)){
-							newTestcaseNode = new TestcaseNode(gn.get(0).getDestination(), newBefore);
-							new_n.getNode().setText("!(" +new_n.getNode().getText()+")");
-						}
-						stack.push(newTestcaseNode);
-						result.add(newTestcaseNode);
+					
+					int isNew;
+					
+					if(gn.get(0).getDestination().getDeep() < n.getNode().getDeep()){
+						isNew = 0;
+					}
+					else if(gn.get(1).getDestination().getDeep() < n.getNode().getDeep()){
+						isNew = 1;
+					}
+					else if(gn.get(0).getLineColor() == RED_COLOR){
+						isNew = 1;
 					}
 					else{
-						newTestcaseNode = new TestcaseNode(gn.get(0).getDestination(), newBefore);
-						if(result.contains(newTestcaseNode)){
-							newTestcaseNode = new TestcaseNode(gn.get(1).getDestination(), newBefore);
+						isNew = 0;
+					}
+					//newTestcaseNode
+					if( isNew == 0 && !result.contains(newTestcaseNode = new TestcaseNode(gn.get(0).getDestination(), newBefore))){
+						if(gn.get(0).getLineColor() == RED_COLOR){
 							new_n.getNode().setText("!(" +new_n.getNode().getText()+")");
 						}
 						stack.push(newTestcaseNode);
-						result.add(newTestcaseNode);
+						result.add(new_n);
+					}
+					else{
+						newTestcaseNode = new TestcaseNode(gn.get(1).getDestination(), newBefore);
+						if(gn.get(1).getLineColor() == RED_COLOR){
+							new_n.getNode().setText("!(" +new_n.getNode().getText()+")");
+						}
+						stack.push(newTestcaseNode);
+						result.add(new_n);
 					}
 				}
 			}
@@ -86,11 +102,7 @@ public class TestcaseGenerator {
 			while(!q.isEmpty()){
 				//System.out.println(q.toString());
 				TestcaseNode n = q.poll();
-				if(n.getNode().getText().contains("START")||
-						n.getNode().getText().contains("END")||
-						n.getNode().getText().contains("FOR")||
-						n.getNode().getText().contains("WHILE")){
-				}
+		
 				System.out.println("<<<" + n.toString());
 				List<TestcaseGraphConnection> gn = n.getNode().getSourceConnections();
 				TestcaseNode newTestcaseNode1 = null;
@@ -125,14 +137,45 @@ public class TestcaseGenerator {
 					notVisited.remove(newTestcaseNode1);
 				}
 				else if (gn.size ()== 2){
-					if(gn.get(0).getLineColor() == RED_COLOR){
-						//true
+					
+					int isNew;// 0 or 1
+					
+					if(gn.get(0).getDestination().getDeep() < n.getNode().getDeep()){
+						isNew = 1;
+						if(!notVisited.contains(newTestcaseNode2)){
+							isNew = 0;
+						}
+					}
+					else if(gn.get(1).getDestination().getDeep() < n.getNode().getDeep()){
+						isNew = 0;
+						if(!notVisited.contains(newTestcaseNode1)){
+							isNew = 1;
+						}
+					}
+					else if(gn.get(0).getLineColor() == RED_COLOR){
+						isNew = 0;
+						if(!notVisited.contains(newTestcaseNode1)){
+							isNew = 1;
+						}
+					}
+					else{
+						isNew = 1;
+						if(!notVisited.contains(newTestcaseNode2)){
+							isNew = 0;
+						}
+					}
+					
+					//isNew == 0
+					if(isNew == 0){
+						// queue add 1
 						if(notVisited.contains(newTestcaseNode2)){
 							q.add(newTestcaseNode2);
 							notVisited.remove(newTestcaseNode2);
 						}
 						//newtest
-						new_n1.getNode().setText("!(" +new_n1.getNode().getText()+")");
+						if(gn.get(0).getLineColor() == RED_COLOR){
+							new_n1.getNode().setText("!(" +new_n1.getNode().getText()+")");
+						}
 						ArrayList<TestcaseNode> newtest = new ArrayList<TestcaseNode>();
 						for( TestcaseNode i : newTestcaseNode1.getBefore()){
 							newtest.add(new TestcaseNode(i));
@@ -141,21 +184,22 @@ public class TestcaseGenerator {
 							newtest.add(new TestcaseNode(j));
 						}
 						this.tests.add(newtest);
-						//flase
+						//queue add 0
 						if(notVisited.contains(newTestcaseNode1)){
 							q.add(newTestcaseNode1);
 							notVisited.remove(newTestcaseNode1);
 						}
-						
 					}
-					else{
-						//true
+					else{//isNew == 1
+						//queue add 0
 						if(notVisited.contains(newTestcaseNode1)){
 							q.add(newTestcaseNode1);
 							notVisited.remove(newTestcaseNode1);
 						}
 						//newtest
-						new_n2.getNode().setText("!(" +new_n2.getNode().getText()+")");
+						if(gn.get(1).getLineColor() == RED_COLOR){
+							new_n2.getNode().setText("!(" +new_n2.getNode().getText()+")");
+						}
 						ArrayList<TestcaseNode> newtest = new ArrayList<TestcaseNode>();
 						for( TestcaseNode i : newTestcaseNode2.getBefore()){
 							newtest.add(new TestcaseNode(i));
@@ -164,13 +208,12 @@ public class TestcaseGenerator {
 							newtest.add(new TestcaseNode(j));
 						}
 						this.tests.add(newtest);
-						//false
+						//queue add 1
 						if(notVisited.contains(newTestcaseNode2)){
 							q.add(newTestcaseNode2);
 							notVisited.remove(newTestcaseNode2);
 
 						}
-						
 					}
 				}
 				
