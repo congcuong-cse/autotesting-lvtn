@@ -54,7 +54,7 @@ public class TestcaseNode {
 	
 	@Override
 	public String toString(){
-		 return  "<" + this.node.getType() + "," + this.node.getDeep() + "> " + this.node.getText() ;
+		 return  /*"<" + this.node.getType() + "," + this.node.getDeep() + "> " +*/ this.node.getText() ;
 	}
 
 	

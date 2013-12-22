@@ -26,11 +26,14 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.jdt.core.Signature;
+
+import com.rits.cloning.Cloner;
 
 import bsh.EvalError;
 import bsh.Interpreter;
@@ -120,15 +123,12 @@ public class TestcaseController implements ITestcaseController {
 			System.out.println(path);
 			
 			ILocalVariable[] pVar = method.getParameters();
-			String[] pName = method.getParameterNames();
-			System.out.println(pVar.toString());
-			System.out.println(pName.toString());
 			
 			ArrayList<TestcaseParameter> listPara = new ArrayList<TestcaseParameter>();
 			boolean generatorInput = true;
 			for (ILocalVariable i:pVar){
 				if(i.getTypeSignature().equals("I")){
-					listPara.add(new TestcaseParameter(i,-10,-10,10));
+					//listPara.add(new TestcaseParameter(i,-10,-10,10));
 				}
 //				else if(i.getTypeSignature().equals("Z")){
 //					listPara.add(new TestcaseParameter(i,0,0,1));
@@ -149,18 +149,7 @@ public class TestcaseController implements ITestcaseController {
 
 			}
 			if (!file.exists()) {
-//				PasswordDialog dialog = new PasswordDialog(getShell());
-			    
-			    // get the new values from the dialog
-//			    if (dialog.open() == Window.OK) {
-//			      String user = dialog.getUser();
-//			      String pw = dialog.getPassword();
-//			      System.out.println(user);
-//			      System.out.println(pw);
-//			    }
-				//InputDialog dlg = new InputDialog( getShell(), "Title", "Enter text", "Initial value", null); 
-				//dlg.open();
-				//if (dlg.open() == Window.OK) // User clicked OK; run perl String input = dlg.getValue(); // TODO:do something with value } return null; }
+				
 				FileOutputStream fos = new FileOutputStream(path);
 				PrintStream ps = new PrintStream(fos);
 				
@@ -196,9 +185,28 @@ public class TestcaseController implements ITestcaseController {
 			    ps.println("\t\t myClass = null;");
 			    ps.println("\t}");
 				int counttest = 1;
+				if(generatorInput){
+					for (ILocalVariable _p:pVar){
+						if(_p.getTypeSignature().equals("I")){
+							RangeLimitDialog dialog = new RangeLimitDialog(getShell(), _p.getElementName());
+						    
+						    // get the new values from the dialog
+							//dialog.setMin(min)
+						    if (dialog.open() == Window.OK) {
+						    	int min = Integer.parseInt(dialog.getMin());
+						    	int max = Integer.parseInt(dialog.getMax());
+						    	listPara.add(new TestcaseParameter(_p,min,min,max));
+						    }
+						    else{
+						    	listPara.add(new TestcaseParameter(_p,-10,-10,10));
+						    }
+						}
+					}
+				}
 				for(ArrayList<TestcaseNode> i: tg.getTests()){
 					
 					if(generatorInput){
+						
 						TestcaseParameter.beginLoop(listPara);	
 						while(true){
 							String outputExpected ="";
@@ -210,9 +218,33 @@ public class TestcaseController implements ITestcaseController {
 									//System.out.println("set("+ t.getVar().getElementName()+"," + t.getValue() + ")");
 									in.set(t.getVar().getElementName(),t.getValue());
 								}
-								for(TestcaseNode e: i){
-									
-									if(e.getNode().getType()==1){
+								for(int m = 0; m< i.size(); m++){
+									TestcaseNode e = i.get(m);
+									if(e.getNode().getType() == 0 && e.getNode().getDeep()>1){
+										//TODO
+										ArrayList<TestcaseNode> newpaths = new ArrayList<TestcaseNode>();
+										newpaths.add(e);
+										for(int j = m+1; j < i.size(); j++){
+											TestcaseNode newtest = i.get(j);
+											if(newtest.getNode().getDeep() > 1 && newtest.getNode().getType() != 0){
+												newpaths.add(newtest);
+											}
+											else{
+												m = j;
+												break;
+											}
+										}
+										if(runLoop(in, newpaths, 2, outputExpected) == true){
+											m --;
+											continue;
+										}
+										else{
+											gonext = 1;
+											break;
+										}
+										
+									}
+									else if(e.getNode().getType()==1){
 										//System.out.println("eval(" +e.getNode().getText() + ")");
 										in.eval(e.getNode().getText());
 									}
@@ -233,7 +265,8 @@ public class TestcaseController implements ITestcaseController {
 
 								}
 							} catch (Throwable t) {
-								// TODO Auto-generated catch block
+								// Auto-generated catch block
+								t.printStackTrace();
 								String err="";
 								String errClass="";
 								if( t instanceof bsh.TargetError){
@@ -405,6 +438,75 @@ public class TestcaseController implements ITestcaseController {
 		}
 	}
 
+	public boolean runLoop(Interpreter in, ArrayList<TestcaseNode> paths, int deep, String outputExpected) throws EvalError{
+		Interpreter new_in = new Interpreter();
+		new_in.setNameSpace(new Cloner().deepClone(in.getNameSpace()));
+		int gonext = 0;
+		String loopCondition = paths.get(0).getNode().getInfo();
+		String loopBody = paths.get(0).getNode().getInfo_();
+		for(int i=0; i<paths.size(); i++){
+			TestcaseNode test = paths.get(i);
+			
+			if(test.getNode().getDeep() > deep  && isBeginLoop(test)){
+				ArrayList<TestcaseNode> newpaths = new ArrayList<TestcaseNode>();
+				newpaths.add(test);
+				for(int j = i+1; j < paths.size(); j++){
+					TestcaseNode newtest = paths.get(j);
+					if(newtest.getNode().getDeep() > deep && newtest.getNode().getType() != 0){
+						newpaths.add(newtest);
+					}
+					else{
+						i = j;
+						break;
+					}
+				}
+				return runLoop(new_in, newpaths, deep +1, outputExpected);
+			}
+			else{
+				
+				//TODO
+				if(test.getNode().getType()==1){
+					//System.out.println("eval(" +e.getNode().getText() + ")");
+					new_in.eval(test.getNode().getText());
+				}
+				else if(test.getNode().getType()==2){
+					//System.out.println("eval(_con = " +e.getNode().getText() + ")");
+					new_in.eval("_con = " + test.getNode().getText());
+					if( (Boolean) new_in.get("_con") == false){
+						gonext =1;
+						break;
+					}
+				}
+				
+				else if(test.getNode().getType()==3){
+					//System.out.println("eval("+  e.getNode().getText().replaceFirst("return","return _result =") + ")");
+					new_in.eval(test.getNode().getText().replaceFirst("return","return _result ="));
+					outputExpected = new_in.get("_result").toString();
+				}
+			}
+		}
+		if(gonext == 0){
+			in.setNameSpace(new Cloner().deepClone(new_in.getNameSpace()));;
+			return true;
+		}
+		else{
+			in.eval("_con = " + loopCondition );
+			if( (Boolean) in.get("_con") == false){
+				return false;
+			}
+			else{
+				in.eval(loopBody);
+				return runLoop(in, paths, deep, outputExpected);
+			}
+		}
+	}
+	
+	public boolean isBeginLoop(TestcaseNode test){
+		return (test.getNode().getText().equals("FOR")
+				|| test.getNode().getText().equals("WHILE")
+				|| test.getNode().getText().equals("DO"));
+	}
+	
 	@Override
 	public ICompilationUnit getCompUnit() {
 		return compUnit;

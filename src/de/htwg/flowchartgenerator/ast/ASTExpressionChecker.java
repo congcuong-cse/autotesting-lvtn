@@ -3,6 +3,7 @@ package de.htwg.flowchartgenerator.ast;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.ConditionalExpression;
+import org.eclipse.jdt.core.dom.Expression;
 
 import de.htwg.flowchartgenerator.ast.model.FNode;
 import de.htwg.flowchartgenerator.ast.model.INode;
@@ -34,6 +35,10 @@ public class ASTExpressionChecker extends ASTVisitor {
 		nodes.addNode(then_);
 		nodes.getNodes().add(new FNode("", -1));
 		nodes.addNode(else_);
+		Expression expr = node.getExpression();
+		ASTLogicalExpressionChecker alc = new ASTLogicalExpressionChecker();
+		INode tmpNode = alc.visit_(expr);
+		nodes.addNode(tmpNode);
 		return true;
 	}
 	/**
