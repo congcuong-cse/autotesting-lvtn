@@ -170,7 +170,8 @@ public class ASTNodeMainVisitor extends ASTVisitor {
 
 	public boolean visit(ForStatement node) {
 		FNode forNode = new FNode("FOR", ASTNode.FOR_STATEMENT);
-		forNode.setInfo(node.toString());
+		forNode.setInfo(node.getExpression().toString());
+		
 		ASTVisitor visitor = new ASTNodeMainVisitor(forNode);
 		node.getBody().accept(visitor);
 		if (forNode.getSize() == 0) {
@@ -187,11 +188,14 @@ public class ASTNodeMainVisitor extends ASTVisitor {
 			tmp_init.addNode(new FNode(i.toString(),ASTNode.EXPRESSION_STATEMENT));
 		}
 		INode tmp_update = new FNode("FORUPDATE", ASTNode.FOR_STATEMENT);;
+		String upd = "";
 		List<Expression> updates = node.updaters();
 		for( Expression i : updates){
 			//System.out.println(i);
+			upd += "\n" +i.toString() +";";
 			tmp_update.addNode(new FNode(i.toString(),ASTNode.EXPRESSION_STATEMENT));
 		}
+		forNode.setInfo_(node.getBody().toString() + upd);
 		forNode.addNode(tmp_init);
 		forNode.addNode(tmp_update);
 		addToCursor(tmp, forNode);
@@ -201,7 +205,8 @@ public class ASTNodeMainVisitor extends ASTVisitor {
 
 	public boolean visit(WhileStatement node) {
 		FNode forNode = new FNode("WHILE", ASTNode.WHILE_STATEMENT);
-		forNode.setInfo(node.toString());
+		forNode.setInfo(node.getExpression().toString());
+		forNode.setInfo_(node.getBody().toString());
 		ASTVisitor visitor = new ASTNodeMainVisitor(forNode);
 		node.getBody().accept(visitor);
 		if (forNode.getSize() == 0) {
@@ -218,7 +223,8 @@ public class ASTNodeMainVisitor extends ASTVisitor {
 
 	public boolean visit(DoStatement node) {
 		INode forNode = new FNode("DO", ASTNode.DO_STATEMENT);
-		forNode.setInfo(node.toString());
+		forNode.setInfo(node.getExpression().toString());
+		forNode.setInfo_(node.getBody().toString());
 		ASTVisitor visitor = new ASTNodeMainVisitor(forNode);
 		node.getBody().accept(visitor);
 		//FNode whileNode = new FNode(node.getExpression().toString(), ASTNode.WHILE_STATEMENT);

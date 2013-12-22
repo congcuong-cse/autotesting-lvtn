@@ -18,6 +18,7 @@ public class FNode implements Serializable, Cloneable, INode {
 	protected List<INode> nodes = new ArrayList<INode>();
 	protected String value = "";
 	protected String fullInfo = "";
+	protected String fullInfo_ = "";
 	protected int type = -1;
 	protected boolean folded = false;
 
@@ -92,6 +93,16 @@ public class FNode implements Serializable, Cloneable, INode {
 	@Override
 	public void setInfo(String str) {
 		this.fullInfo = str;
+	}
+	
+	@Override
+	public String getInfo_() {
+		return fullInfo_;
+	}
+
+	@Override
+	public void setInfo_(String str) {
+		this.fullInfo_ = str;
 	}
 
 	@Override

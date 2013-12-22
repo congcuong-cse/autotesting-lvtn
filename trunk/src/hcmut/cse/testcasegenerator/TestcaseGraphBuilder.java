@@ -238,6 +238,8 @@ public class TestcaseGraphBuilder{
 		 ************************************/
 		if (node.getType() == ASTNode.FOR_STATEMENT) {
 			TestcaseGraphNode ForNode = new TestcaseGraphNode(g, node.getValue(), 0, deep+1);
+			ForNode.setInfo(node.getInfo());
+			ForNode.setInfo_(node.getInfo_());
 			List<INode> inits = node.getNodes().get(node.getNodes().size() -2).getNodes();
 			newGraphNode = ForNode;
 			for(int i = inits.size()-1; i>=0; i--){
@@ -274,6 +276,8 @@ public class TestcaseGraphBuilder{
 		 ************************************/
 		if (node.getType() == ASTNode.WHILE_STATEMENT) {
 			newGraphNode = new TestcaseGraphNode(g, node.getValue(), 0, deep+1);
+			newGraphNode.setInfo(node.getInfo());
+			newGraphNode.setInfo_(node.getInfo_());
 			if (node.getNodes().size() != 0) {
 				TestcaseGraphNode head = null;
 				TestcaseGraphNode tail = null;
@@ -296,6 +300,8 @@ public class TestcaseGraphBuilder{
 		 ************************************/
 		if (node.getType() == ASTNode.DO_STATEMENT) {
 			newGraphNode = new TestcaseGraphNode(g, node.getValue(), 0, deep+1);
+			newGraphNode.setInfo(node.getInfo());
+			newGraphNode.setInfo_(node.getInfo_());
 			if (node.getNodes().size() == 3) {
 				TestcaseGraphNode body = null;// the inner part
 				TestcaseGraphNode tail = null;// the main stream
@@ -360,9 +366,10 @@ public class TestcaseGraphBuilder{
 			//endGraphNode.setBackgroundColor(RED_COLOR);
 		}
 		if (null != newGraphNode && node.getType() != ASTNode.BREAK_STATEMENT) {
+			
 			nodeAdmin.add(new TestcaseNodeContainer(node, newGraphNode));
 		}
-		
+		//newGraphNode.setInfo(node.getInfo());
 		return newGraphNode;
 	}
 

@@ -6,6 +6,7 @@ public class TestcaseGraphNode {
 	private int id;
 	private String text;
 	private String info;
+	private String info_;
 	private int type = 1;
 	private int deep = 1;
 	private ArrayList<TestcaseGraphConnection> sourceConnections = new ArrayList<TestcaseGraphConnection>();
@@ -30,6 +31,7 @@ public class TestcaseGraphNode {
 		this.id = n.getId();
 		this.text = n.getText();
 		this.info = n.getInfo();
+		this.info_ = n.getInfo_();
 		this.type = n.getType();
 		this.deep = n.getDeep();
 		this.sourceConnections = n.getSourceConnections();
@@ -56,6 +58,14 @@ public class TestcaseGraphNode {
 	
 	public void setInfo(String info){
 		this.info = info;
+	}
+	
+	public String getInfo_(){
+		return this.info_;
+	}
+	
+	public void setInfo_(String info_){
+		this.info_ = info_;
 	}
 	
 	public void setType(int type){

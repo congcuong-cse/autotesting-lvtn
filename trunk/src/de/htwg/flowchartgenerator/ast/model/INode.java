@@ -35,6 +35,10 @@ public interface INode {
 	
 	public abstract String getInfo();
 	
+	public abstract void setInfo_(String str);
+	
+	public abstract String getInfo_();
+	
 	public abstract boolean isFolded();
 	public abstract void setFolded(boolean folded);
 	
