@@ -234,7 +234,7 @@ public class TestcaseController implements ITestcaseController {
 												break;
 											}
 										}
-										if(runLoop(in, newpaths, 2, outputExpected) == true){
+										if(TestcaseGenerator.runLoop(in, newpaths, 2, outputExpected) == true){
 											m --;
 											continue;
 										}
@@ -436,75 +436,6 @@ public class TestcaseController implements ITestcaseController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-
-	public boolean runLoop(Interpreter in, ArrayList<TestcaseNode> paths, int deep, String outputExpected) throws EvalError{
-		Interpreter new_in = new Interpreter();
-		new_in.setNameSpace(new Cloner().deepClone(in.getNameSpace()));
-		int gonext = 0;
-		String loopCondition = paths.get(0).getNode().getInfo();
-		String loopBody = paths.get(0).getNode().getInfo_();
-		for(int i=0; i<paths.size(); i++){
-			TestcaseNode test = paths.get(i);
-			
-			if(test.getNode().getDeep() > deep  && isBeginLoop(test)){
-				ArrayList<TestcaseNode> newpaths = new ArrayList<TestcaseNode>();
-				newpaths.add(test);
-				for(int j = i+1; j < paths.size(); j++){
-					TestcaseNode newtest = paths.get(j);
-					if(newtest.getNode().getDeep() > deep && newtest.getNode().getType() != 0){
-						newpaths.add(newtest);
-					}
-					else{
-						i = j;
-						break;
-					}
-				}
-				return runLoop(new_in, newpaths, deep +1, outputExpected);
-			}
-			else{
-				
-				//TODO
-				if(test.getNode().getType()==1){
-					//System.out.println("eval(" +e.getNode().getText() + ")");
-					new_in.eval(test.getNode().getText());
-				}
-				else if(test.getNode().getType()==2){
-					//System.out.println("eval(_con = " +e.getNode().getText() + ")");
-					new_in.eval("_con = " + test.getNode().getText());
-					if( (Boolean) new_in.get("_con") == false){
-						gonext =1;
-						break;
-					}
-				}
-				
-				else if(test.getNode().getType()==3){
-					//System.out.println("eval("+  e.getNode().getText().replaceFirst("return","return _result =") + ")");
-					new_in.eval(test.getNode().getText().replaceFirst("return","return _result ="));
-					outputExpected = new_in.get("_result").toString();
-				}
-			}
-		}
-		if(gonext == 0){
-			in.setNameSpace(new Cloner().deepClone(new_in.getNameSpace()));;
-			return true;
-		}
-		else{
-			in.eval("_con = " + loopCondition );
-			if( (Boolean) in.get("_con") == false){
-				return false;
-			}
-			else{
-				in.eval(loopBody);
-				return runLoop(in, paths, deep, outputExpected);
-			}
-		}
-	}
-	
-	public boolean isBeginLoop(TestcaseNode test){
-		return (test.getNode().getText().equals("FOR")
-				|| test.getNode().getText().equals("WHILE")
-				|| test.getNode().getText().equals("DO"));
 	}
 	
 	@Override

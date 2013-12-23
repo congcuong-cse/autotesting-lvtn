@@ -93,7 +93,7 @@ public class FlowChartOutlinePage extends Page implements IContentOutlinePage,
 		head.setBackground(head.getParent().getBackground());
 		head.setFont(new Font(null, "Arial", 12, 0));
 		head.setAlignment(SWT.CENTER);
-		head.setText("Flow Chart Generator");
+		head.setText("Control Flow Graph");
 
 		info = new StyledText(c, SWT.LEFT_TO_RIGHT);
 		info.setBackground(head.getParent().getBackground());
@@ -160,7 +160,7 @@ public class FlowChartOutlinePage extends Page implements IContentOutlinePage,
 		int cons = outlineModel.getConnections();
 		int nodes = outlineModel.getNodes();
 		int result = (cons - nodes + 2);
-		String generatorInfo = "MacCabe results\n"+ cons + " - " + nodes
+		String generatorInfo = "McCabe results\n"+ cons + " - " + nodes
 				+ " + 2 = " + result + "\n*Satisfied :\t\t"
 				+ (result <= lim)+"  ";
 		return generatorInfo;
