@@ -4,20 +4,47 @@ public class Main {
 	
 	public int simple_for(int a){
 		int i;
-		for (i=0; i<10 && a<10 ; i++){
-			if(a<2)
+		for (i=0; a< 8 && a>0; i++){
+			if(a<5)
 				a += 2;
 			else
 				a += 1;
 		}
-		return a;
+		return a+i;
+	}
+	
+	public int simple_while(int a){
+		int i;
+		i=0;
+		while (a< 8 && a>0){
+			if(a<5)
+				a += 2;
+			else
+				a += 1;
+			i++;
+		}
+		return a+i;
+	}
+	
+	public int simple_do(int a){
+		int i;
+		i=0;
+		do{
+			if(a<5)
+				a += 2;
+			else
+				a += 1;
+			i++;
+		}
+		while (a< 8 && a>0);
+		return a+i;
 	}
 	
 	public int mutiple_for(int a, int b){
 		int i;
 		int j;
-		for (i=0; i<10; i++){
-			for (j=0; j<10 && a<20; j++){
+		for (i=0; i<3; i++){
+			for (j=0; j <3; j++){
 				a +=1;
 				b +=1;
 			}
@@ -29,16 +56,16 @@ public class Main {
 		int i;
 		int j;
 		i=0;
-		while ( i<10){
+		while (a>3 && a< 5){
 			j=0;
-			while (j<10 && a<20){
+			while (b>0 && b<3){
 				a +=1;
 				b +=1;
 				j++;
 			}
-			i++;
+			i = i+j;
 		}
-		return a+b;
+		return i;
 	}
 	
 	public int mutiple_do(int a, int b){
@@ -164,6 +191,10 @@ public class Main {
 			return a;
 	}
 	
+	public void ternaryStatement(int a, int c){
+		a = (a== 0  && c != 0)? 0 : 1;
+	}
+	
 	public int a( int b, int c){
 		int i;
 		int j;
@@ -221,27 +252,32 @@ public class Main {
 		else
 			return 0;
 	}
-	
-	public int condition_and(boolean v1, boolean v2){
+	public boolean condition_all(boolean v1, boolean v2, boolean v3){
+		if( v1 && !(v2 || v3))
+			return true;
+		else
+			return false;
+	}
+	public boolean condition_and(boolean v1, boolean v2){
 		if( v1 && v2){
-			return 1;
+			return true;
 		}
 		else
-			return 0;
+			return false;
 	}
-	public int condition_or(boolean v1, boolean v2){
+	public boolean condition_or(boolean v1, boolean v2){
 		if( v1 || v2){
-			return 1;
+			return true;
 		}
 		else
-			return 0;
+			return false;
 	}
-	public int condition_not(boolean v1){
+	public boolean condition_not(boolean v1){
 		if( !v1 ){
-			return 1;
+			return true;
 		}
 		else
-			return 0;
+			return false;
 	}
 
 }
