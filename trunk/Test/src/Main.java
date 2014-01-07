@@ -2,6 +2,236 @@ package hcmut.cse;
 
 public class Main {
 	
+	public int _fn01(){
+		int a = 4;
+		return a;
+	}
+	
+	public int _fn02(int a){
+		if(a==0){
+			return 1/a;
+		}
+		else
+			return a;
+	}
+	
+	public int _fn03(int a){
+		if(a<0){
+			return a;
+		}
+		else if(a==0){
+			return 1/a;
+		}
+		else
+			return a;
+	}
+	
+	public int _fn04( int c, int d){
+		if(!(d==0 && c==6)){
+			d= d+1;
+			return d;
+		}
+		else
+			return c;
+	}
+	
+	public void _fn05(int a, int x, int y){
+		switch (a){  
+			case 1:
+				System.out.println("Enter the number one=" + (x+y));
+				break;
+			case 2:
+				System.out.println("Enter the number two=" + (x-y));
+				break;
+			case 3:
+				System.out.println("Enetr the number three="+ (x*y));
+				break;
+			case 4:
+				System.out.println("Enter the number four="+ (x/y));
+				break;
+			default:
+				System.out.println("Invalid Entry!");
+		}
+	}
+	
+	public int _fn06( int a, int b){
+		if(a<0){
+			if(b<0){
+				return 1;
+			}
+			else{
+				return 2;
+			}
+		}
+		else if(a==0){
+			if(b<0){
+				return 3;
+			}
+			else{
+				return 4;
+			}
+		}
+		else{
+			if(b<0){
+				return 5;
+			}
+			else{
+				return 6;
+			}
+		}
+	}
+	public int _fn07( int a, int b){
+		if(a<0){
+			if(b<0){
+				return 1;
+			}
+			else if (b==0){
+				return 2;
+			}
+			else{
+				return 3;
+			}
+		}
+		else if(a==0){
+			if(b<0){
+				return 4;
+			}
+			else if (b==0){
+				return 5;
+			}
+			else{
+				return 6;
+			}
+		}
+		else{
+			if(b<0){
+				return 7;
+			}
+			else if (b==0){
+				return 8;
+			}
+			else{
+				return 9;
+			}
+		}
+	}
+	
+	public int _fn08(int b, int c){
+		switch (b){
+			case -1:
+				if( c == 4)
+				c = 9;
+				else
+					break;
+			case 0: 
+			case 2:
+				c =1;
+				break;
+			default:
+				b = 3;
+				break;
+		}
+		return b;
+	}
+	
+	public int _fn09( int c, int d){
+		if(!(d==0 && c==6)){
+			d= d+1;
+			return d;
+		}
+		else
+			d = c;
+		if(d>=5){
+			d = d+2;
+		}
+		else
+			return c;
+		return 4;
+	}
+	
+	public int _fn10( int a, int b, int c){
+		if( !( !(a==0 && b==3) || c==1 )){
+			return 1;
+		}
+		else
+			return 0;
+	}
+	
+	public int _fn11( int a, int b, int c, int d){
+		if( !( !(a==0 && b==3) || c==1 || !(d>0))){
+			return 1;
+		}
+		else
+			return 0;
+	}
+	
+	public int _fn12(int a){
+		int i;
+		for (i=0; a< 8 && a>0; i++){
+			if(a<5)
+				a += 2;
+			else
+				a += 1;
+		}
+		return a+i;
+	}
+	
+	public int _fn13(int a){
+		int i;
+		i=0;
+		while (a< 8 && a>0){
+			if(a<5)
+				a += 2;
+			else
+				a += 1;
+			i++;
+		}
+		return a+i;
+	}
+	
+	public int _fn14(int a){
+		int i;
+		i=0;
+		do{
+			if(a<5)
+				a += 2;
+			else
+				a += 1;
+			i++;
+		}
+		while (a< 8 && a>0);
+		return a+i;
+	}
+	
+	public int _fn15(int a, int b){
+		int i;
+		int j;
+		for (i=0; i<3; i++){
+			for (j=0; j <3; j++){
+				a +=1;
+				b +=1;
+			}
+		}
+		return a+b;
+	}
+	
+	public int _fn16(int a, int b){
+		int i;
+		int j;
+		i=0;
+		while (a>3 && a< 5){
+			j=0;
+			while (b>0 && b<3){
+				a +=1;
+				b +=1;
+				j++;
+			}
+			i = i+j;
+		}
+		return i;
+	}
+	
+	
 	public int simple_for(int a){
 		int i;
 		for (i=0; a< 8 && a>0; i++){
@@ -87,13 +317,13 @@ public class Main {
 	}
 	
 	public int mutiple_if( int c, int d){
-		if(!(d==0 && c==0)){
+		if(!(d==0 && c==6)){
 			d= d+1;
 			return d;
 		}
 		else
-			d = c*d;
-		if(d>=10){
+			d = c;
+		if(d>=5){
 			d = d+2;
 		}
 		else
@@ -102,7 +332,7 @@ public class Main {
 	}
 	
 	public int mutiple_condition( int a, int b, int c, int d){
-		if( !( !(a==c && b==d) || a==b || !(c==d))){
+		if( !( !(a==0 && b==3) || a==1 || !(c==d))){
 			return 1;
 		}
 		else

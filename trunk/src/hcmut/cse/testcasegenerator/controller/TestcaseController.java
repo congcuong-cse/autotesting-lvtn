@@ -89,6 +89,7 @@ public class TestcaseController implements ITestcaseController {
 	public void operate() {
 		INode nodes = null;
 		try {
+			
 			String javaCode = method.getSource();
 			System.out.println(method.getSource());
 
@@ -203,10 +204,18 @@ public class TestcaseController implements ITestcaseController {
 						}
 					}
 				}
+				// Get current time
+				long start = System.currentTimeMillis();
 				for(ArrayList<TestcaseNode> i: tg.getTests()){
 					
 					if(generatorInput){
-						
+						// Get current time
+						long startTest = System.currentTimeMillis();
+
+						// Do something ...
+
+						// Get elapsed time in milliseconds
+						long elapsedLoopTimeMillis;
 						TestcaseParameter.beginLoop(listPara);	
 						while(true){
 							String outputExpected ="";
@@ -274,10 +283,12 @@ public class TestcaseController implements ITestcaseController {
 									System.out.println(te.getTarget().toString());
 									err = te.getTarget().toString();
 									errClass = te.getTarget().getClass().getName();
+									elapsedLoopTimeMillis = System.currentTimeMillis()-startTest;
 									ps.println("");
 									ps.println("\t/**");
 									ps.println("\t * Test Number " + counttest);
 									ps.println("\t * Path: "+i);
+									ps.println("\t * Time: "+elapsedLoopTimeMillis + " ms");
 									ps.println("\t * Result: error: "+err); 
 									ps.println("\t * @throws Exception"); 
 									ps.println("\t */");
@@ -324,10 +335,12 @@ public class TestcaseController implements ITestcaseController {
 								
 							}
 							if(gonext == 0){
+								elapsedLoopTimeMillis = System.currentTimeMillis()-startTest;
 								ps.println("");
 								ps.println("\t/**");
 								ps.println("\t * Test Number " + counttest);
 								ps.println("\t * Path: "+i);
+								ps.println("\t * Time: "+elapsedLoopTimeMillis+ " ms");
 								ps.println("\t * Result: Ok"); 
 								ps.println("\t * @throws Exception"); 
 								ps.println("\t */");
@@ -359,10 +372,12 @@ public class TestcaseController implements ITestcaseController {
 								break;
 							}
 							if(TestcaseParameter.endLoop(listPara)){
+								elapsedLoopTimeMillis = System.currentTimeMillis()-startTest;
 								ps.println("");
 								ps.println("\t/**");
 								ps.println("\t * Test Number " + counttest);
 								ps.println("\t * Path: "+i);
+								ps.println("\t * Time: "+elapsedLoopTimeMillis + " ms");
 								ps.println("\t * Result: Cannot generate inputs!"); 
 								ps.println("\t * @throws Exception"); 
 								ps.println("\t */");
@@ -389,40 +404,22 @@ public class TestcaseController implements ITestcaseController {
 							}
 						}
 					}
-					else{
-						ps.println("");
-						ps.println("\t/**");
-						ps.println("\t * Test Number " + counttest);
-						ps.println("\t * Path: "+i);
-						ps.println("\t * Result: Cannot generate inputs!"); 
-						ps.println("\t * @throws Exception"); 
-						ps.println("\t */");
-						ps.println("\t@Test");
-						ps.println("\tpublic void " + "test" + counttest + "() {");
-						
-						String inputs = "";
-						for(int m = 0; m<listPara.size();m++){
-							TestcaseParameter it = listPara.get(m);
-							if(m ==0){
-								inputs += "input"+ (m+1);
-							}
-							else{
-								inputs += ", input" + (m+1);
-							}
-							ps.println("\t\t"+ Signature.toString(it.getVar().getTypeSignature()) + " input" + (m+1) + ";//TODO");
-						}
-						ps.println("\t\tfail(\"Cannot generate inputs!\");");
-						ps.println("\t\t//myClass."+ method.getElementName()+ "(" + inputs + ");");
-					}
 					ps.println("\t}");
 					counttest++;
 				}
-				ps.print("}");
+				long elapsedTimeMillis = System.currentTimeMillis()-start;
+				System.out.println("Time: " + elapsedTimeMillis + " ms");
+				ps.print("}//" + "Time: " + elapsedTimeMillis + " ms");
+				
 				ps.close();
+				System.out.println("Write ...Done!");
+				
+				// Get elapsed time in milliseconds
+				
 				Path fullpath = new Path(path);
 				IDE.openEditorOnFileStore(targetPart.getSite().getPage(), EFS.getLocalFileSystem().getStore(fullpath));
 				method.getJavaProject().getResource().refreshLocal(10, null);
-				System.out.println("Write ...Done!");
+				
 			}
 		} catch (JavaModelException e) {
 			e.printStackTrace();
